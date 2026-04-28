@@ -2001,12 +2001,15 @@ window.acaoCancelar = acaoCancelar;
 async function carregarUsuarios(){
   const el = $('panel-usuarios');
   if(!el) return;
-  el.innerHTML = `<div class="panel-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
-    <div><div class="panel-title">Gestão de Usuários</div><div class="panel-sub">Gerencie os acessos ao sistema.</div></div>
-    <button class="reload-btn" onclick="abrirModalUsuario()">+ Novo Usuário</button>
-  </div>
-  <div id="lista-usuarios" style="display:flex;flex-direction:column;gap:8px"></div>
-  <div class="footer">CENTRAL UBER CONCRESERV</div>`;
+  // Só renderiza o header se ainda não existir
+  if(!$('lista-usuarios')){
+    el.innerHTML = `<div class="panel-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+      <div><div class="panel-title">Gestão de Usuários</div><div class="panel-sub">Gerencie os acessos ao sistema.</div></div>
+      <button class="reload-btn" onclick="abrirModalUsuario()">+ Novo Usuário</button>
+    </div>
+    <div id="lista-usuarios" style="display:flex;flex-direction:column;gap:8px"><div class="kb-empty"><div class="kb-empty-icon">👥</div>Carregando usuários...</div></div>
+    <div class="footer">CENTRAL UBER CONCRESERV</div>`;
+  }
 
   try {
     const res = await apiCall('GET', '/usuarios');
