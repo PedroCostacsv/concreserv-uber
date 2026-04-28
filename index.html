@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Central Uber Concreserv</title>
+<!-- build: 2026-04-28-v3 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -1839,7 +1840,7 @@ function renderUser(){
   buildDateFilter('df-user', filtroDataUser, 'setFiltroUser');
   const filtered   = corridasUser.filter(c => passaFiltroData(c, filtroDataUser, rangeDeUser, rangeAteUser));
   const pendente   = filtered.filter(c => c.status === 'Recebido');
-  const atend      = filtered.filter(c => ['Em atendimento','Corrida solicitada'].includes(c.status));
+  const atend      = filtered.filter(c => c.status === 'Em atendimento');
   const concluido  = filtered.filter(c => c.status === 'Concluído');
   const cancelado  = filtered.filter(c => c.status === 'Cancelado');
   $('kanban-user').innerHTML =
@@ -1861,7 +1862,7 @@ function renderAt(){
     return fq && passaFiltroData(c, filtroDataAt, rangeDeAt, rangeAteAt);
   });
   const pendente  = filtered.filter(c => c.status === 'Recebido');
-  const atend     = filtered.filter(c => ['Em atendimento','Corrida solicitada'].includes(c.status));
+  const atend     = filtered.filter(c => c.status === 'Em atendimento');
   const concluido = filtered.filter(c => c.status === 'Concluído');
   const cancelado = filtered.filter(c => c.status === 'Cancelado');
   $('kanban-at').innerHTML =
@@ -1949,16 +1950,22 @@ function kbCardAt(c){
 
   let actions = '';
   if(c.status === 'Recebido'){
-    actions = `<div class="kb-actions"><button class="kb-btn kb-btn-assumir" onclick="acao('${c.id}','assumir')">Assumir atendimento</button></div>`;
-  } else if(atNome && !done){
-    let btns = `<button class="kb-blocked">🔒 ${atNome}</button>`;
-    if(c.status === 'Em atendimento')     btns += `<button class="kb-btn kb-btn-corrida"   onclick="acao('${c.id}','corrida')">Corrida solicitada</button>`;
-    if(c.status === 'Corrida solicitada') btns += `<button class="kb-btn kb-btn-concluido" onclick="acao('${c.id}','concluido')">Concluído</button>`;
-    btns += `<button class="kb-btn kb-btn-cancelar" onclick="acaoCancelar('${c.id}')">Cancelar</button>`;
-    actions = `<div class="kb-actions">${btns}</div>`;
-  }
-  if(done){
-    actions = `<div class="kb-actions"><button class="kb-btn kb-btn-reabrir" onclick="acao('${c.id}','reabrir')">↩ Reabrir</button></div>`;
+    actions = `<div class="kb-actions">
+      <button class="kb-btn kb-btn-assumir" onclick="acao('${c.id}','assumir')">Assumir atendimento</button>
+    </div>`;
+  } else if(c.status === 'Em atendimento' && atNome){
+    actions = `<div class="kb-actions">
+      <button class="kb-blocked">🔒 ${atNome}</button>
+      <button class="kb-btn kb-btn-corrida" onclick="acaoCorrida('${c.id}')">✓ Corrida Solicitada</button>
+      <button class="kb-btn kb-btn-cancelar" onclick="acaoCancelar('${c.id}')">Cancelar</button>
+    </div>`;
+  } else if(done){
+    actions = `<div class="kb-actions">
+      <div style="text-align:center;font-size:11px;font-weight:600;padding:6px;color:var(--st-green-tx);background:var(--st-green-bg);border-radius:var(--radius-sm)">
+        ✓ Concluído
+      </div>
+      <button class="kb-btn kb-btn-reabrir" onclick="acao('${c.id}','reabrir')">↩ Reabrir</button>
+    </div>`;
   }
 
   return `<div class="kb-card${urgClass}${atencaoClass}">
@@ -1985,6 +1992,21 @@ function kbCardAt(c){
 }
 
 // ── Ações ────────────────────────────────────────────────────
+async function acaoCorrida(id){
+  try {
+    // Passo 1: marca corrida solicitada
+    const r1 = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'corrida' });
+    if(!r1.ok){ notif('info','Atenção', r1.msg); return; }
+    // Passo 2: já conclui automaticamente
+    await new Promise(r => setTimeout(r, 500)); // pequena pausa para o banco processar
+    const r2 = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'concluido' });
+    if(!r2.ok){ notif('info','Atenção', r2.msg); return; }
+    notif('status','✅ Corrida concluída!','A corrida foi finalizada com sucesso.');
+    await carregarAtendente(true);
+  } catch(e){ notif('info','Erro','Não foi possível concluir a corrida.'); }
+}
+window.acaoCorrida = acaoCorrida;
+
 async function acao(id, subacao){
   try {
     const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: subacao });
