@@ -790,17 +790,17 @@
   }
   .tipo-btn:hover,.urg-btn:hover{color:var(--text);}
   .tipo-btn.sel{
-    background:var(--brand);
-    color:var(--white);
+    background:var(--white);
+    color:var(--text);
     font-weight:600;
-    border-color:var(--brand);
+    border-color:var(--border);
     box-shadow:var(--shadow-sm);
   }
   .urg-btn.normal.sel{
-    background:var(--st-green-bg);
+    background:var(--white);
     color:var(--st-green-tx);
     font-weight:600;
-    border-color:var(--st-green);
+    border-color:var(--border);
     box-shadow:var(--shadow-sm);
   }
   .urg-btn.urgente.sel{
@@ -1448,19 +1448,11 @@ function checarRegras(){
 }
 function senhaOk(v){ return v.length >= 8 && /[A-Z]/.test(v) && /[0-9]/.test(v); }
 function fmtTel(el){
-  const pos = el.selectionStart;
-  const prev = el.value.length;
-  let v = el.value.replace(/\D/g,'');
-  if(v.length > 11) v = v.slice(0,11);
-  let fmt = '';
-  if(v.length <= 10){
-    fmt = v.replace(/(\d{0,2})(\d{0,4})(\d{0,4})/,'($1) $2-$3').replace(/[\s\-\(\)]+$/,'');
-  } else {
-    fmt = v.replace(/(\d{0,2})(\d{0,5})(\d{0,4})/,'($1) $2-$3').replace(/[\s\-\(\)]+$/,'');
-  }
-  el.value = fmt;
-  const diff = fmt.length - prev;
-  el.setSelectionRange(pos + diff, pos + diff);
+  let v = el.value.replace(/\D/g, '');
+  v = v.length <= 10
+    ? v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3')
+    : v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+  el.value = v;
 }
 function fmtData(iso){
   if(!iso) return '';
@@ -1990,78 +1982,82 @@ function kbCardAt(c){
   const revTag     = emRevisao ? '<span class="kb-rev-tag">REVISÃO</span>' : '';
   const atencaoClass = (c.status === 'Recebido' && minutosDesde(c.criado_em) >= 5) ? ' atencao' : '';
   const revisaoClass = emRevisao ? ' revisao' : '';
-  const atInfo     = atNome ? `<div class="kb-atendente"><div class="kb-at-av">${atNome.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>${atNome}</div>` : '';
   const dtConc     = c.dt_conclusao ? fmtDt(c.dt_conclusao) : '';
-  const conclusaoInfo = dtConc ? `<div style="font-size:11px;color:var(--st-green-tx);padding:6px 0 0;display:flex;align-items:center;gap:4px"><span>✓</span>Encerrado em ${dtConc}</div>` : '';
+  const conclusaoInfo = dtConc ? `<div style="font-size:11px;color:var(--st-green-tx);padding:4px 0 0;display:flex;align-items:center;gap:4px"><span>✓</span>Encerrado em ${dtConc}</div>` : '';
   const obsRevisao = c.observacao_revisao ? `<div class="rev-obs-box"><div class="rev-obs-label">Obs. do atendente</div>${c.observacao_revisao}</div>` : '';
+  const atInfo     = atNome ? `<div class="kb-atendente"><div class="kb-at-av">${atNome.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>${atNome}</div>` : '';
 
-  // WhatsApp
+  // WhatsApp do SOLICITANTE
   const telSol = (c.solicitante_telefone||'').replace(/\D/g,'');
-  const waMsg  = encodeURIComponent(`Olá ${c.solicitante_nome||''}, temos uma divergência com sua solicitação poderia me ajudar.`);
+  const waMsg  = encodeURIComponent(\`Olá \${c.solicitante_nome||''}, temos uma divergência com sua solicitação poderia me ajudar.\`);
+  const waSvg  = \`<svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>\`;
   const waBtnHtml = telSol
-    ? `<a href="https://wa.me/55${telSol}?text=${waMsg}" target="_blank" class="btn-whatsapp" style="width:100%;justify-content:center;text-decoration:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</a>`
+    ? \`<a href="https://wa.me/55\${telSol}?text=\${waMsg}" target="_blank" class="btn-whatsapp" style="flex:1;justify-content:center;text-decoration:none">\${waSvg} WhatsApp</a>\`
     : '';
 
+  // Ações
   let actions = '';
   if(c.status === 'Recebido' || emRevisao){
-    actions = `<div class="kb-actions">
-      <button class="kb-btn kb-btn-assumir" onclick="assumirEAbrirModal('${c.id}')">Assumir atendimento</button>
-      ${emRevisao && waBtnHtml ? waBtnHtml : ''}
-    </div>`;
+    actions = \`<div class="kb-actions">
+      <button class="kb-btn kb-btn-assumir" style="flex:1" onclick="assumirEAbrirModal('\${c.id}')">Assumir atendimento</button>
+      \${waBtnHtml ? \`<div style="display:flex;gap:6px;margin-top:4px">\${waBtnHtml}</div>\` : ''}
+    </div>\`;
   } else if(c.status === 'Em atendimento' && atNome){
-    actions = `<div class="kb-actions">
-      <button class="kb-blocked">🔒 ${atNome}</button>
-      ${waBtnHtml}
-      <button class="kb-btn kb-btn-corrida" onclick="acaoCorrida('${c.id}')">✓ Corrida Solicitada</button>
-      <button class="kb-btn" style="background:var(--st-amber-bg);color:var(--st-amber-tx);border:1px solid #FCD34D" onclick="abrirRevisao('${c.id}','${c.protocolo}')">↩ Solicitar Revisão</button>
-      <button class="kb-btn kb-btn-cancelar" onclick="acaoCancelar('${c.id}')">Cancelar</button>
-    </div>`;
+    actions = \`<div class="kb-actions">
+      <button class="kb-blocked">🔒 \${atNome}</button>
+      <div style="display:flex;gap:6px">
+        \${waBtnHtml}
+        <button class="kb-btn kb-btn-corrida" style="flex:1" onclick="acaoCorrida('\${c.id}')">✓ Corrida Solicitada</button>
+      </div>
+      <button class="kb-btn" style="background:var(--st-amber-bg);color:var(--st-amber-tx);border:1px solid #FCD34D" onclick="abrirRevisao('\${c.id}','\${c.protocolo}')">↩ Solicitar Revisão</button>
+      <button class="kb-btn kb-btn-cancelar" onclick="acaoCancelar('\${c.id}')">Cancelar</button>
+    </div>\`;
   } else if(done){
-    actions = `<div class="kb-actions">
-      <div style="text-align:center;font-size:11px;font-weight:600;padding:6px;color:var(--st-green-tx);background:var(--st-green-bg);border-radius:var(--radius-sm)">✓ Concluído</div>
-      <button class="kb-btn kb-btn-reabrir" onclick="acao('${c.id}','reabrir')">↩ Reabrir</button>
-    </div>`;
+    actions = \`<div class="kb-actions">
+      <div style="text-align:center;font-size:11px;font-weight:600;padding:6px;color:var(--st-green-tx);background:var(--st-green-bg);border-radius:var(--radius-sm)">✓ \${c.status}</div>
+      <button class="kb-btn kb-btn-reabrir" onclick="acao('\${c.id}','reabrir')">↩ Reabrir</button>
+    </div>\`;
   }
 
-  return `<div class="kb-card${urgClass}${atencaoClass}${revisaoClass}">
+  // Tipo + urgência formatados
+  const tipoLabel = c.tipo === 'agendada' ? '📅 Agendada' : '⚡ Imediata';
+  const urgLabel  = c.urgencia === 'urgente' ? '🔴 Urgente' : '🟢 Normal';
+
+  return \`<div class="kb-card\${urgClass}\${atencaoClass}\${revisaoClass}" onclick="abrirModalDetalhesCard('\${c.id}')" style="cursor:pointer">
     <div class="kb-card-top">
-      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${kbStatusChip(c.status)}${revTag}</div>
-      ${urgTag}
+      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">\${kbStatusChip(c.status)}\${revTag}</div>
+      \${urgTag}
     </div>
-    <div class="kb-proto">${c.protocolo} · ${fmtDt(c.criado_em)}</div>
-    <div class="kb-sol"><span style="color:var(--text3)">↑</span>${c.solicitante_nome||''}</div>
-    <div class="kb-pass">${c.passageiro_nome||''}</div>
+    <div class="kb-proto">\${c.protocolo} · \${fmtDt(c.criado_em)}</div>
+    <div class="kb-sol"><span style="color:var(--text3)">↑</span>\${c.solicitante_nome||''}</div>
+    <div class="kb-pass" style="font-size:14px;font-weight:700;margin:4px 0">\${c.passageiro_nome||''}</div>
     <div class="kb-route">
-      <div class="kb-route-row"><div class="kb-dot o"></div><span>${c.origem||''}</span></div>
+      <div class="kb-route-row"><div class="kb-dot o"></div><span>\${c.origem||''}</span></div>
       <div class="kb-route-line"></div>
-      <div class="kb-route-row"><div class="kb-dot d"></div><span>${c.destino||''}</span></div>
+      <div class="kb-route-row"><div class="kb-dot d"></div><span>\${c.destino||''}</span></div>
     </div>
-    <div class="kb-meta">
-      <span class="kb-dt">${c.dt_solicitada||''}</span>
-      <span class="kb-cc">${c.centro_custo||''}</span>
+    <div style="font-size:11px;color:var(--text2);margin:6px 0 2px;line-height:1.6">
+      <span style="font-weight:600;color:var(--text)">Motivo:</span> \${c.motivo||'—'}
     </div>
-    ${obsRevisao}
-    ${conclusaoInfo}
-    ${atInfo}
-    ${actions}
-  </div>`;
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0">
+      <div style="background:var(--surface-2);border-radius:var(--radius-sm);padding:5px 8px">
+        <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Tipo</div>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-top:1px">\${tipoLabel}</div>
+        <div style="font-size:10px;color:var(--text2)">\${urgLabel}</div>
+      </div>
+      <div style="background:var(--surface-2);border-radius:var(--radius-sm);padding:5px 8px">
+        <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Centro de Custo</div>
+        <div style="font-size:11px;font-weight:600;color:var(--text);margin-top:1px">\${c.centro_custo||'—'}</div>
+        <div style="font-size:10px;color:var(--text2)">\${c.dt_solicitada||''}</div>
+      </div>
+    </div>
+    \${obsRevisao}
+    \${conclusaoInfo}
+    \${atInfo}
+    \${actions}
+  </div>\`;
 }
 
-
-// ── Ações ────────────────────────────────────────────────────
-
-// Assumir e abrir popup com detalhes
-async function assumirEAbrirModal(id){
-  try {
-    const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'assumir' });
-    if(!res.ok){ notif('info','Atenção', res.msg); return; }
-    await carregarAtendente(true);
-    // Abre modal com dados atualizados
-    const corrida = corridasAt.find(c => c.id === id);
-    if(corrida) abrirModalDetalhes(corrida);
-  } catch(e){ notif('info','Erro','Não foi possível assumir o atendimento.'); }
-}
-window.assumirEAbrirModal = assumirEAbrirModal;
 
 function abrirModalDetalhes(c){
   fecharModal();
