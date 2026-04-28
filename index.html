@@ -1337,8 +1337,9 @@
   </div>
 </div>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
+const $  = id  => document.getElementById(id);
+const $$ = sel => document.querySelectorAll(sel);
 // ============================================================
 // CENTRAL UBER CONCRESERV — Frontend v2 (Node.js + Supabase)
 // ============================================================
@@ -1348,7 +1349,7 @@ const SUPA_URL    = 'https://hsrqslmaxeiawddoomrs.supabase.co';
 const SUPA_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzcnFzbG1heGVpYXdkZG9vbXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNDAwNTcsImV4cCI6MjA5MjkxNjA1N30.mzLzxz5Gp2F1-eaMeFPgPelS4z5nq0PPeGqr8oSxAwk';
 
 // ── Supabase client (apenas para Realtime — sem acesso direto ao banco) ──
-const _supa = window.supabase.createClient(SUPA_URL, SUPA_ANON);
+// Realtime desativado (CDN bloqueado) - usando polling
 
 // ── Estado global ────────────────────────────────────────────
 let sessao        = null;
@@ -1373,11 +1374,9 @@ let rangeDeAt   = '', rangeAteAt   = '';
 let _apiTimer  = null;
 let _fetchLock = false;
 
-const INTERVALO_API = 30000;
+const INTERVALO_API = 15000;
 
-// ── Helpers DOM ──────────────────────────────────────────────
-const $  = id  => document.getElementById(id);
-const $$ = sel => document.querySelectorAll(sel);
+// ── Helpers DOM (movidos para início) ──
 
 // ── API REST ─────────────────────────────────────────────────
 async function apiCall(method, path, body = null, tentativa = 1) {
@@ -1651,7 +1650,7 @@ document.addEventListener('visibilitychange', () => {
 
 // ── Supabase Realtime ─────────────────────────────────────────
 function iniciarRealtime(){
-  if(realtimeSub) { try { _supa.removeChannel(realtimeSub); } catch(e){} }
+  realtimeSub = null;
 
   realtimeSub = _supa
     .channel('corridas-changes')
