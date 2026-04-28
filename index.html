@@ -2106,11 +2106,13 @@ function kbCardAt(c){
   const obsRevisao = c.observacao_revisao ? '<div class="rev-obs-box"><div class="rev-obs-label">Obs. do atendente</div>' + c.observacao_revisao + '</div>' : '';
   const atInfo     = atNome ? '<div class="kb-atendente"><div class="kb-at-av">' + atNome.split(' ').map(function(n){return n[0];}).slice(0,2).join('') + '</div>' + atNome + '</div>' : '';
 
-  // WhatsApp do SOLICITANTE — detecta mobile vs desktop automaticamente
+  // WhatsApp — usa passageiro_telefone (sempre preenchido) com fallback para solicitante_telefone
+  var _waTel     = (c.passageiro_telefone||'').replace(/\D/g,'') || (c.solicitante_telefone||'').replace(/\D/g,'');
+  var _waNome    = (c.passageiro_telefone||'').replace(/\D/g,'') ? (c.passageiro_nome||c.solicitante_nome||'') : (c.solicitante_nome||'');
   var waHref = waLink(
-    c.solicitante_telefone,
-    c.solicitante_nome,
-    'Olá ' + (c.solicitante_nome||'') + ', temos uma atualização sobre a solicitação de corrida (protocolo ' + (c.protocolo||'') + '). Poderia me ajudar?'
+    _waTel,
+    _waNome,
+    'Olá ' + _waNome + ', temos uma atualização sobre a solicitação de corrida (protocolo ' + (c.protocolo||'') + '). Poderia me ajudar?'
   );
   var waBtnHtml = waHref
     ? '<a href="' + waHref + '" target="_blank" onclick="event.stopPropagation()" title="Falar com ' + (c.solicitante_nome||'solicitante') + ' pelo WhatsApp"'
