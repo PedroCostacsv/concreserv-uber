@@ -1270,6 +1270,18 @@
         <div class="footer">CENTRAL UBER CONCRESERV</div>
       </div>
 
+      <!-- PAINEL USUÁRIOS (Admin) -->
+      <div class="panel" id="panel-usuarios">
+        <div class="panel-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <div><div class="panel-title">Gestão de Usuários</div><div class="panel-sub">Gerencie os acessos ao sistema.</div></div>
+          <button class="reload-btn" onclick="abrirModalUsuario()">+ Novo Usuário</button>
+        </div>
+        <div id="lista-usuarios" style="display:flex;flex-direction:column;gap:8px">
+          <div class="kb-empty"><div class="kb-empty-icon">👥</div>Carregando...</div>
+        </div>
+        <div class="footer">CENTRAL UBER CONCRESERV</div>
+      </div>
+
       <!-- PAINEL ATENDENTE — KANBAN -->
       <div class="panel" id="panel-atendente">
         <div class="panel-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
@@ -1559,11 +1571,11 @@ function navItem(id, icon, label, active = false){
 function showPanel(id){
   $$('.panel').forEach(p => p.classList.remove('active'));
   $$('.nav-item').forEach(n => n.classList.remove('active'));
-  $('panel-' + id).classList.add('active');
+  const painelEl = $('panel-' + id); if(!painelEl) return; painelEl.classList.add('active');
   const nav = $('nav-' + id); if(nav) nav.classList.add('active');
   const titles = { solicitar:'Nova Solicitação', minhas:'Minhas Corridas',
                    atendente:'Painel Atendente', usuarios:'Gestão de Usuários' };
-  $('topbar-title').textContent = titles[id] || id;
+  const tb = $('topbar-title'); if(tb) tb.textContent = titles[id] || id;
   const mt = $('mobile-title'); if(mt) mt.textContent = titles[id] || id;
   currentPanel = id;
   pararPolling();
@@ -1999,17 +2011,9 @@ window.acaoCancelar = acaoCancelar;
 
 // ── Gestão de Usuários (Admin) ────────────────────────────────
 async function carregarUsuarios(){
-  const el = $('panel-usuarios');
-  if(!el) return;
-  // Só renderiza o header se ainda não existir
-  if(!$('lista-usuarios')){
-    el.innerHTML = `<div class="panel-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px">
-      <div><div class="panel-title">Gestão de Usuários</div><div class="panel-sub">Gerencie os acessos ao sistema.</div></div>
-      <button class="reload-btn" onclick="abrirModalUsuario()">+ Novo Usuário</button>
-    </div>
-    <div id="lista-usuarios" style="display:flex;flex-direction:column;gap:8px"><div class="kb-empty"><div class="kb-empty-icon">👥</div>Carregando usuários...</div></div>
-    <div class="footer">CENTRAL UBER CONCRESERV</div>`;
-  }
+  const lista = $('lista-usuarios');
+  if(!lista) return;
+  lista.innerHTML = `<div class="kb-empty"><div class="kb-empty-icon">👥</div>Carregando usuários...</div>`;
 
   try {
     const res = await apiCall('GET', '/usuarios');
