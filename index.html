@@ -1448,11 +1448,19 @@ function checarRegras(){
 }
 function senhaOk(v){ return v.length >= 8 && /[A-Z]/.test(v) && /[0-9]/.test(v); }
 function fmtTel(el){
-  let v = el.value.replace(/\D/g, '');
-  v = v.length <= 10
-    ? v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3')
-    : v.replace(/(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
-  el.value = v;
+  const pos = el.selectionStart;
+  const prev = el.value.length;
+  let v = el.value.replace(/\D/g,'');
+  if(v.length > 11) v = v.slice(0,11);
+  let fmt = '';
+  if(v.length <= 10){
+    fmt = v.replace(/(\d{0,2})(\d{0,4})(\d{0,4})/,'($1) $2-$3').replace(/[\s\-\(\)]+$/,'');
+  } else {
+    fmt = v.replace(/(\d{0,2})(\d{0,5})(\d{0,4})/,'($1) $2-$3').replace(/[\s\-\(\)]+$/,'');
+  }
+  el.value = fmt;
+  const diff = fmt.length - prev;
+  el.setSelectionRange(pos + diff, pos + diff);
 }
 function fmtData(iso){
   if(!iso) return '';
