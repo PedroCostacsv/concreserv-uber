@@ -1124,6 +1124,15 @@
   .pac-matched{color:var(--brand);font-weight:700;}
   .pac-icon{display:none;}
   .hdpi .pac-icon{display:none;}
+
+  /* ── Multiselect centros de custo ── */
+  .cc-multi{display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--white);max-height:160px;overflow-y:auto;scrollbar-width:thin;}
+  .cc-multi label{display:flex;align-items:center;gap:8px;padding:7px 10px;font-size:13px;cursor:pointer;border-bottom:0.5px solid var(--border);transition:background .1s;}
+  .cc-multi label:last-child{border-bottom:none;}
+  .cc-multi label:hover{background:var(--surface-2);}
+  .cc-multi input[type=checkbox]{accent-color:var(--brand);width:14px;height:14px;flex-shrink:0;}
+  .cc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;min-height:20px;}
+  .cc-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;background:var(--st-blue-bg);color:var(--st-blue-tx);border:0.5px solid var(--st-blue-bg);}
 </style>
 </head>
 <body>
@@ -1310,7 +1319,6 @@
                 <label class="fl">Centro de Custo <span class="req">*</span></label>
                 <select class="fs" id="f-cc">
                   <option value="">Selecione o centro de custo</option>
-                  <option>DEPTO - ARQAMBIENTAL</option><option>DEPTO - ARQUIVO</option><option>DEPTO - COMPRAS</option><option>DEPTO - CONTABILIDADE</option><option>DEPTO - ENGENHARIA</option><option>DEPTO - FINANCEIRO</option><option>DEPTO - JURIDICO</option><option>DEPTO - MANUTENÇÃO</option><option>DEPTO - MARKETING</option><option>DEPTO - RH</option><option>DEPTO - SEGURANÇA</option><option>DEPTO - SESMT</option><option>DEPTO - T.I</option><option>DEPTO - TRANSPORTE</option><option>DEPTO COMERCIAL - BAIXADA</option><option>DEPTO COMERCIAL - CAXIAS</option><option>DEPTO COMERCIAL - FLORIANOPOLIS</option><option>DEPTO COMERCIAL - GRD SÃO PAULO</option><option>DEPTO COMERCIAL - INTERIOR</option><option>DEPTO COMERCIAL - MINAS</option><option>DEPTO COMERCIAL - PORTO ALEGRE</option><option>DIRETORIA</option><option>OPERACAO - BAIXADA</option><option>OPERACAO - BOMBAS</option><option>OPERACAO - CAXIAS</option><option>OPERACAO - FLORIANOPOLIS</option><option>OPERACAO - INTERIOR</option><option>OPERACAO - MINAS</option><option>OPERACAO - PORTO ALEGRE</option><option>OPERACAO - SAO PAULO</option>
                 </select>
               </div>
               <div class="fg form-full"><label class="fl">Motivo da Corrida <span class="req">*</span></label><textarea class="ft" id="f-mot" placeholder="Descreva o motivo..."></textarea></div>
@@ -1641,6 +1649,17 @@ function abrirApp(){
   $('sol-det').textContent  = sessao.email + ' · ' + sessao.unidade;
   $('f-data').min = new Date().toISOString().split('T')[0];
   if(localStorage.getItem('sb-collapsed') === '1') $('sidebar').classList.add('collapsed');
+  // Popula centro de custo com os centros vinculados ao usuário
+  const ccSel = $('f-cc');
+  if(ccSel){
+    const ccs = sessao.centros_custo || [];
+    ccSel.innerHTML = ccs.length === 0
+      ? '<option value="">Nenhum centro de custo vinculado</option>'
+      : (ccs.length === 1
+          ? `<option value="${ccs[0]}">${ccs[0]}</option>`
+          : '<option value="">Selecione o centro de custo</option>' + ccs.map(c => `<option value="${c}">${c}</option>`).join(''));
+    if(ccs.length === 1) ccSel.value = ccs[0];
+  }
   buildNav();
   pedirNotif();
   iniciarRealtime();
@@ -2636,28 +2655,47 @@ function renderUsuarios(lista){
   const el = $('lista-usuarios');
   if(!el) return;
   const perfilCor = { Administrador:'var(--st-purple-bg);color:var(--st-purple-tx)', Atendente:'var(--st-blue-bg);color:var(--st-blue-tx)', Solicitante:'var(--st-green-bg);color:var(--st-green-tx)' };
-  el.innerHTML = lista.map(u =>
-    '<div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">'
-    + '<div style="width:36px;height:36px;border-radius:50%;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">' + u.nome.split(' ').map(n=>n[0]).slice(0,2).join('') + '</div>'
-    + '<div style="flex:1;min-width:160px"><div style="font-size:13px;font-weight:600">' + u.nome + '</div><div style="font-size:11px;color:var(--text2)">' + u.email + ' · ' + u.unidade + '</div>' + (u.telefone ? '<div style="font-size:11px;color:var(--text3)">📱 ' + u.telefone + '</div>' : '') + '</div>'
-    + '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:' + (perfilCor[u.perfil]||'var(--surface-2);color:var(--text2)') + '">' + u.perfil + '</span>'
-    + '<span style="font-size:11px;padding:3px 10px;border-radius:100px;background:' + (u.ativo?'var(--st-green-bg)':'var(--st-red-bg)') + ';color:' + (u.ativo?'var(--st-green-tx)':'var(--st-red-tx)') + '">' + (u.ativo?'Ativo':'Inativo') + '</span>'
-    + '<div style="display:flex;gap:6px">'
-    + '<button class="reload-btn" onclick="editarUsuario(\'' + u.id + '\',\'' + u.nome + '\',\'' + u.unidade + '\',\'' + u.perfil + '\',' + u.ativo + ',\'' + (u.telefone||'') + '\')">Editar</button>'
-    + '<button class="reload-btn" onclick="resetarSenha(\'' + u.id + '\',\'' + u.nome + '\')">Reset senha</button>'
-    + '<button class="reload-btn" style="color:' + (u.ativo?'var(--st-red-tx)':'var(--st-green-tx)') + '" onclick="toggleAtivo(\'' + u.id + '\',' + u.ativo + ')">' + (u.ativo?'Desativar':'Ativar') + '</button>'
-    + '</div></div>'
-  ).join('');
+  el.innerHTML = lista.map(u => {
+    const ccs = u.centros_custo || [];
+    const ccTags = ccs.length
+      ? '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">' + ccs.map(c => '<span style="font-size:10px;font-weight:600;padding:1px 7px;border-radius:100px;background:var(--st-blue-bg);color:var(--st-blue-tx)">' + c + '</span>').join('') + '</div>'
+      : '<div style="font-size:11px;color:var(--text3);margin-top:2px">Sem centro de custo</div>';
+    const ccsJson = JSON.stringify(ccs).replace(/'/g, "\\'");
+    return '<div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">'
+      + '<div style="width:36px;height:36px;border-radius:50%;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px">' + u.nome.split(' ').map(n=>n[0]).slice(0,2).join('') + '</div>'
+      + '<div style="flex:1;min-width:160px">'
+      +   '<div style="font-size:13px;font-weight:600">' + u.nome + '</div>'
+      +   '<div style="font-size:11px;color:var(--text2)">' + u.email + ' · ' + u.unidade + '</div>'
+      +   (u.telefone ? '<div style="font-size:11px;color:var(--text3)">📱 ' + u.telefone + '</div>' : '')
+      +   ccTags
+      + '</div>'
+      + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">'
+      +   '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">'
+      +     '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:' + (perfilCor[u.perfil]||'var(--surface-2);color:var(--text2)') + '">' + u.perfil + '</span>'
+      +     '<span style="font-size:11px;padding:3px 10px;border-radius:100px;background:' + (u.ativo?'var(--st-green-bg)':'var(--st-red-bg)') + ';color:' + (u.ativo?'var(--st-green-tx)':'var(--st-red-tx)') + '">' + (u.ativo?'Ativo':'Inativo') + '</span>'
+      +   '</div>'
+      +   '<div style="display:flex;gap:6px">'
+      +     '<button class="reload-btn" onclick=\'editarUsuario("' + u.id + '","' + u.nome.replace(/"/g,'&quot;') + '","' + u.unidade + '","' + u.perfil + '",' + u.ativo + ',"' + (u.telefone||'') + '",' + JSON.stringify(ccs) + ')\'>Editar</button>'
+      +     '<button class="reload-btn" onclick="resetarSenha(\'' + u.id + '\',\'' + u.nome + '\')">Reset senha</button>'
+      +     '<button class="reload-btn" style="color:' + (u.ativo?'var(--st-red-tx)':'var(--st-green-tx)') + '" onclick="toggleAtivo(\'' + u.id + '\',' + u.ativo + ')">' + (u.ativo?'Desativar':'Ativar') + '</button>'
+      +   '</div>'
+      + '</div></div>';
+  }).join('');
 }
 
-function abrirModalUsuario(id='', nome='', unidade='', perfil='Solicitante', ativo=true, tel=''){
+const ALL_CC = ['DEPTO - ARQAMBIENTAL','DEPTO - ARQUIVO','DEPTO - COMPRAS','DEPTO - CONTABILIDADE','DEPTO - ENGENHARIA','DEPTO - FINANCEIRO','DEPTO - JURIDICO','DEPTO - MANUTENÇÃO','DEPTO - MARKETING','DEPTO - RH','DEPTO - SEGURANÇA','DEPTO - SESMT','DEPTO - T.I','DEPTO - TRANSPORTE','DEPTO COMERCIAL - BAIXADA','DEPTO COMERCIAL - CAXIAS','DEPTO COMERCIAL - FLORIANOPOLIS','DEPTO COMERCIAL - GRD SÃO PAULO','DEPTO COMERCIAL - INTERIOR','DEPTO COMERCIAL - MINAS','DEPTO COMERCIAL - PORTO ALEGRE','DIRETORIA','OPERACAO - BAIXADA','OPERACAO - BOMBAS','OPERACAO - CAXIAS','OPERACAO - FLORIANOPOLIS','OPERACAO - INTERIOR','OPERACAO - MINAS','OPERACAO - PORTO ALEGRE','OPERACAO - SAO PAULO'];
+
+function abrirModalUsuario(id='', nome='', unidade='', perfil='Solicitante', ativo=true, tel='', centrosCusto=[]){
   fecharModal();
   const isEdit = !!id;
   const unidades = ['Matriz - São Paulo','BAIXADA','CAXIAS','FLORIANOPOLIS','GRD SÃO PAULO','INTERIOR','MINAS','PORTO ALEGRE'];
+  const ccCheckboxes = ALL_CC.map(cc =>
+    `<label><input type="checkbox" value="${cc}" ${centrosCusto.includes(cc)?'checked':''}> ${cc}</label>`
+  ).join('');
   const modal = document.createElement('div');
   modal.id = 'modal-usuario';
   modal.className = 'modal-overlay';
-  modal.innerHTML = '<div class="modal-box" style="max-width:420px">'
+  modal.innerHTML = '<div class="modal-box" style="max-width:460px">'
     + '<div class="modal-header"><div class="modal-title">' + (isEdit?'Editar Usuário':'Novo Usuário') + '</div><button class="modal-close" onclick="fecharModal()">✕</button></div>'
     + '<div class="modal-body">'
     + (!isEdit ? '<div class="modal-field"><span class="modal-label">E-mail *</span><input class="fi" id="mu-email" placeholder="nome@concreserv.com.br"></div>' : '')
@@ -2665,10 +2703,18 @@ function abrirModalUsuario(id='', nome='', unidade='', perfil='Solicitante', ati
     + '<div class="modal-field"><span class="modal-label">Telefone (WhatsApp)</span><input class="fi" id="mu-tel" value="' + tel + '" placeholder="(11) 99999-0000" oninput="fmtTel(this)"></div>'
     + '<div class="modal-field"><span class="modal-label">Unidade *</span><select class="fs" id="mu-unidade">' + unidades.map(u => '<option' + (u===unidade?' selected':'') + '>' + u + '</option>').join('') + '</select></div>'
     + '<div class="modal-field"><span class="modal-label">Perfil *</span><select class="fs" id="mu-perfil">' + ['Solicitante','Atendente','Administrador'].map(p => '<option' + (p===perfil?' selected':'') + '>' + p + '</option>').join('') + '</select></div>'
+    + '<div class="modal-field"><span class="modal-label">Centros de Custo</span><div class="cc-multi" id="mu-cc-list">' + ccCheckboxes + '</div><div class="cc-tags" id="mu-cc-tags"></div></div>'
     + '</div>'
     + '<div class="modal-footer"><button class="btn-submit" style="flex:1" onclick="' + (isEdit ? 'salvarUsuario(\'' + id + '\')' : 'criarUsuario()') + '">' + (isEdit?'Salvar alterações':'Criar usuário') + '</button><button class="kb-btn" style="flex:1;border:1px solid var(--border)" onclick="fecharModal()">Cancelar</button></div>'
     + '</div>';
   document.body.appendChild(modal);
+  // Atualiza tags ao marcar/desmarcar
+  const updateTags = () => {
+    const checked = [...document.querySelectorAll('#mu-cc-list input:checked')].map(i => i.value);
+    $('mu-cc-tags').innerHTML = checked.map(c => `<span class="cc-tag">${c}</span>`).join('');
+  };
+  document.querySelectorAll('#mu-cc-list input').forEach(cb => cb.addEventListener('change', updateTags));
+  updateTags();
 }
 
 async function criarUsuario(){
@@ -2677,10 +2723,11 @@ async function criarUsuario(){
   const tel     = $('mu-tel')?.value.trim() || '';
   const unidade = $('mu-unidade')?.value;
   const perfil  = $('mu-perfil')?.value;
+  const centros_custo = [...document.querySelectorAll('#mu-cc-list input:checked')].map(i => i.value);
   if(!email||!nome||!unidade||!perfil){ notif('info','Atenção','Preencha todos os campos.'); return; }
   if(!email.endsWith('@concreserv.com.br')){ notif('info','Atenção','Use e-mail @concreserv.com.br.'); return; }
   try {
-    const res = await apiCall('POST', '/usuarios', { email, nome, unidade, perfil, telefone: tel });
+    const res = await apiCall('POST', '/usuarios', { email, nome, unidade, perfil, telefone: tel, centros_custo });
     if(!res.ok){ notif('info','Atenção', res.msg); return; }
     notif('status','✅ Usuário criado!', nome + ' foi adicionado.');
     fecharModal(); carregarUsuarios();
@@ -2692,8 +2739,9 @@ async function salvarUsuario(id){
   const tel     = $('mu-tel')?.value.trim() || '';
   const unidade = $('mu-unidade')?.value;
   const perfil  = $('mu-perfil')?.value;
+  const centros_custo = [...document.querySelectorAll('#mu-cc-list input:checked')].map(i => i.value);
   try {
-    const res = await apiCall('PATCH', '/usuarios/' + id, { nome, unidade, perfil, telefone: tel });
+    const res = await apiCall('PATCH', '/usuarios/' + id, { nome, unidade, perfil, telefone: tel, centros_custo });
     if(!res.ok){ notif('info','Atenção', res.msg); return; }
     notif('status','✅ Usuário atualizado!','Alterações salvas.');
     fecharModal(); carregarUsuarios();
@@ -2719,8 +2767,8 @@ async function resetarSenha(id, nome){
   } catch(e){ notif('info','Erro','Não foi possível resetar a senha.'); }
 }
 
-function editarUsuario(id, nome, unidade, perfil, ativo, tel){
-  abrirModalUsuario(id, nome, unidade, perfil, ativo, tel||'');
+function editarUsuario(id, nome, unidade, perfil, ativo, tel, centrosCusto){
+  abrirModalUsuario(id, nome, unidade, perfil, ativo, tel||'', centrosCusto||[]);
 }
 
 async function fazerLogout(){
