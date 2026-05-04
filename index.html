@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Central Uber Concreserv</title>
+<!-- ============================================================
+  PASSO A PASSO — o que adicionar no index.html existente
+  ============================================================ -->
+
+
+<!-- ① Dentro do <head>, logo após o <title> — adicione estas 3 linhas: -->
+
+<link rel="manifest" href="/concreserv-uber/manifest.json">
+<meta name="theme-color" content="#FE0000">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Concreserv">
+<link rel="apple-touch-icon" href="/concreserv-uber/icons/icon-192.png">
+<!-- v2026-04-28-b -->
 <!-- build: 2026-04-28-v3 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -965,10 +979,14 @@
   .divider{height:1px;background:var(--border);margin:4px 0;}
 
   /* ====== KANBAN CRM ====== */
-  .kanban-wrap{display:flex;gap:12px;overflow-x:auto;padding-bottom:12px;flex:1;align-items:flex-start;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+  .kanban-wrap{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;flex:1;align-items:flex-start;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
   .kanban-wrap::-webkit-scrollbar{height:6px;}
   .kanban-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-  .kb-col{flex:0 0 280px;min-width:280px;display:flex;flex-direction:column;background:var(--surface-2);border-radius:var(--radius-lg);border:1px solid var(--border);max-height:calc(100vh - 240px);overflow:hidden;}
+  .kb-col{flex:0 0 320px;min-width:320px;display:flex;flex-direction:column;background:var(--surface-2);border-radius:var(--radius-lg);border:1px solid var(--border);max-height:calc(100vh - 240px);overflow:hidden;}
+  @media(max-width:700px){
+    .kanban-wrap{flex-direction:column;overflow-x:unset;gap:10px;}
+    .kb-col{flex:none;min-width:unset;width:100%;max-height:none;}
+  }
   .kb-col-head{padding:12px 14px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;}
   .kb-col-head-left{display:flex;align-items:center;gap:8px;}
   .kb-col-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
@@ -1034,6 +1052,37 @@
   .kb-blocked{width:100%;padding:6px 10px;border-radius:var(--radius-sm);font-size:11px;font-weight:500;background:var(--surface-2);color:var(--text3);border:1px solid var(--border);text-align:center;font-family:inherit;cursor:not-allowed;}
   .kb-empty{padding:24px 16px;text-align:center;font-size:12px;color:var(--text3);border:1px dashed var(--border-strong);border-radius:var(--radius);background:transparent;}
   .kb-empty-icon{font-size:22px;margin-bottom:6px;opacity:.4;}
+
+  /* Badge revisão */
+  .kb-rev-tag{font-size:9px;font-weight:700;padding:2px 6px;border-radius:100px;background:#FEF3C7;color:#92400E;border:1px solid #FCD34D;flex-shrink:0;letter-spacing:.04em;}
+
+  /* Modal overlay */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;display:flex;align-items:center;justify-content:center;padding:16px;}
+  .modal-box{background:var(--white);border-radius:var(--radius-lg);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;}
+  .modal-header{padding:18px 20px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+  .modal-title{font-size:15px;font-weight:700;color:var(--text);}
+  .modal-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px;line-height:1;}
+  .modal-close:hover{color:var(--text);}
+  .modal-body{padding:18px 20px;flex:1;}
+  .modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
+
+  /* Campos do modal */
+  .modal-field{margin-bottom:14px;}
+  .modal-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:4px;}
+  .modal-value{font-size:13px;color:var(--text);font-weight:500;}
+  .modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+
+  /* Caixa de observação revisão */
+  .rev-obs-box{background:#FFFBEB;border:1px solid #FCD34D;border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px;font-size:12px;color:#92400E;line-height:1.5;}
+  .rev-obs-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;color:#92400E;}
+
+  /* WhatsApp btn */
+  .btn-whatsapp{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--radius-sm);background:#25D366;color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;font-family:inherit;text-decoration:none;transition:filter .12s;}
+  .btn-whatsapp:hover{filter:brightness(.92);}
+
+  /* Card em revisão */
+  .kb-card.revisao{background:#FFFBEB;border-color:#FCD34D;}
+  .kb-card.revisao:hover{border-color:#F59E0B;}
   /* Skeleton loading */
   .kb-skeleton{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:12px 13px;display:flex;flex-direction:column;gap:8px;}
   .sk-line{border-radius:4px;background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:sk-shimmer 1.4s infinite;}
@@ -1068,7 +1117,7 @@
         <small>Mobilidade corporativa, gestão centralizada.</small>
       </div>
     </div>
-    <div class="login-side-foot">Concreserv · Identidade institucional</div>
+    <div class="login-side-foot"></div>
   </aside>
 
   <div class="login-form">
@@ -1217,11 +1266,18 @@
           <div class="form-card">
             <div class="form-card-title">Dados da Corrida</div>
             <div class="form-grid">
-              <div class="fg form-full">
+              <div class="fg">
                 <label class="fl">Tipo <span class="req">*</span></label>
                 <div class="tipo-row">
                   <button class="tipo-btn" id="t-imed" onclick="setTipo('imediata')">⚡ Imediata</button>
                   <button class="tipo-btn" id="t-aged" onclick="setTipo('agendada')">📅 Agendada</button>
+                </div>
+              </div>
+              <div class="fg">
+                <label class="fl">Urgência <span class="req">*</span></label>
+                <div class="urg-row">
+                  <button class="urg-btn normal" id="u-norm" onclick="setUrg('normal')">Normal</button>
+                  <button class="urg-btn urgente" id="u-urg" onclick="setUrg('urgente')">● Urgente</button>
                 </div>
               </div>
               <div class="fg sched-f" id="sf-dt"><label class="fl">Data <span class="req">*</span></label><input class="fi" type="date" id="f-data"></div>
@@ -1232,13 +1288,6 @@
                   <option value="">Selecione o centro de custo</option>
                   <option>DEPTO - ARQAMBIENTAL</option><option>DEPTO - ARQUIVO</option><option>DEPTO - COMPRAS</option><option>DEPTO - CONTABILIDADE</option><option>DEPTO - ENGENHARIA</option><option>DEPTO - FINANCEIRO</option><option>DEPTO - JURIDICO</option><option>DEPTO - MANUTENÇÃO</option><option>DEPTO - MARKETING</option><option>DEPTO - RH</option><option>DEPTO - SEGURANÇA</option><option>DEPTO - SESMT</option><option>DEPTO - T.I</option><option>DEPTO - TRANSPORTE</option><option>DEPTO COMERCIAL - BAIXADA</option><option>DEPTO COMERCIAL - CAXIAS</option><option>DEPTO COMERCIAL - FLORIANOPOLIS</option><option>DEPTO COMERCIAL - GRD SÃO PAULO</option><option>DEPTO COMERCIAL - INTERIOR</option><option>DEPTO COMERCIAL - MINAS</option><option>DEPTO COMERCIAL - PORTO ALEGRE</option><option>DIRETORIA</option><option>OPERACAO - BAIXADA</option><option>OPERACAO - BOMBAS</option><option>OPERACAO - CAXIAS</option><option>OPERACAO - FLORIANOPOLIS</option><option>OPERACAO - INTERIOR</option><option>OPERACAO - MINAS</option><option>OPERACAO - PORTO ALEGRE</option><option>OPERACAO - SAO PAULO</option>
                 </select>
-              </div>
-              <div class="fg form-full">
-                <label class="fl">Urgência <span class="req">*</span></label>
-                <div class="urg-row">
-                  <button class="urg-btn normal" id="u-norm" onclick="setUrg('normal')">Normal</button>
-                  <button class="urg-btn urgente" id="u-urg" onclick="setUrg('urgente')">● Urgente</button>
-                </div>
               </div>
               <div class="fg form-full"><label class="fl">Motivo da Corrida <span class="req">*</span></label><textarea class="ft" id="f-mot" placeholder="Descreva o motivo..."></textarea></div>
             </div>
@@ -1305,18 +1354,27 @@
   </div>
 </div>
 
-<script type="module">
+<script>
+const $  = id  => document.getElementById(id);
+const $$ = sel => document.querySelectorAll(sel);
+
+function esc(v) {
+  return String(v ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
 // ============================================================
 // CENTRAL UBER CONCRESERV — Frontend v2 (Node.js + Supabase)
 // ============================================================
 
 const API_URL     = 'https://concreserv-api-production.up.railway.app';
-const SUPA_URL    = 'https://hsrqslmaxeiawddoomrs.supabase.co';
-const SUPA_ANON   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzcnFzbG1heGVpYXdkZG9vbXJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczNDAwNTcsImV4cCI6MjA5MjkxNjA1N30.mzLzxz5Gp2F1-eaMeFPgPelS4z5nq0PPeGqr8oSxAwk';
 
 // ── Supabase client (apenas para Realtime — sem acesso direto ao banco) ──
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-const supabase = createClient(SUPA_URL, SUPA_ANON);
+// Realtime desativado (CDN bloqueado) - usando polling
 
 // ── Estado global ────────────────────────────────────────────
 let sessao        = null;
@@ -1341,32 +1399,50 @@ let rangeDeAt   = '', rangeAteAt   = '';
 let _apiTimer  = null;
 let _fetchLock = false;
 
-const INTERVALO_API = 30000;
+const INTERVALO_API = 15000;
 
-// ── Helpers DOM ──────────────────────────────────────────────
-const $  = id  => document.getElementById(id);
-const $$ = sel => document.querySelectorAll(sel);
+// ── Helpers DOM (movidos para início) ──
 
 // ── API REST ─────────────────────────────────────────────────
 async function apiCall(method, path, body = null, tentativa = 1) {
   const headers = { 'Content-Type': 'application/json' };
-  if (sessao?.token) headers['Authorization'] = 'Bearer ' + sessao.token;
+
+  if (sessao?.token) {
+    headers['Authorization'] = 'Bearer ' + sessao.token;
+  }
 
   const opts = { method, headers };
-  if (body) opts.body = JSON.stringify(body);
+
+  if (body) {
+    opts.body = JSON.stringify(body);
+  }
 
   const ctrl = new AbortController();
   const tid  = setTimeout(() => ctrl.abort(), 12000);
+
   try {
-    const res  = await fetch(API_URL + path, { ...opts, signal: ctrl.signal });
+    const res = await fetch(API_URL + path, { ...opts, signal: ctrl.signal });
     clearTimeout(tid);
-    return await res.json();
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      return {
+        ok: false,
+        msg: data.msg || `Erro HTTP ${res.status}`,
+        status: res.status
+      };
+    }
+
+    return data;
   } catch(e) {
     clearTimeout(tid);
+
     if (tentativa < 2 && e.name !== 'AbortError') {
       await new Promise(r => setTimeout(r, 1500));
       return apiCall(method, path, body, tentativa + 1);
     }
+
     throw e;
   }
 }
@@ -1454,7 +1530,14 @@ function notif(tipo, titulo, msg, dur = 7000){
 window.notif = notif;
 
 function pedirNotif(){
-  if(window.Notification && Notification.permission === 'default') Notification.requestPermission();
+  // Solicita permissão e registra push subscription (PWA)
+  if(window.Notification && Notification.permission === 'default'){
+    Notification.requestPermission().then(perm => {
+      if(perm === 'granted') registrarPushSubscription();
+    });
+  } else if(window.Notification && Notification.permission === 'granted'){
+    registrarPushSubscription();
+  }
 }
 
 // ── LOGIN ─────────────────────────────────────────────────────
@@ -1517,7 +1600,7 @@ async function cadastrarSenha(){
   btn.disabled = false; btn.textContent = 'Criar senha e entrar';
 }
 
-window.verificarEmail  = verificarEmail;
+window.verificarEmail = verificarEmail;
 window.fazerLogin      = fazerLogin;
 window.cadastrarSenha  = cadastrarSenha;
 
@@ -1619,19 +1702,9 @@ document.addEventListener('visibilitychange', () => {
 
 // ── Supabase Realtime ─────────────────────────────────────────
 function iniciarRealtime(){
-  if(realtimeSub) supabase.removeChannel(realtimeSub);
-
-  realtimeSub = supabase
-    .channel('corridas-changes')
-    .on('postgres_changes',
-      { event: '*', schema: 'public', table: 'corridas' },
-      payload => {
-        // Atualiza imediatamente sem esperar o polling
-        if(currentPanel === 'minhas')    carregarUser(true);
-        if(currentPanel === 'atendente') carregarAtendente(true);
-      }
-    )
-    .subscribe();
+  // Realtime desativado. O sistema usa polling via API.
+  realtimeSub = null;
+  return;
 }
 
 function globalSearch(){
@@ -1698,7 +1771,7 @@ async function carregarAtendente(silent = false){
       res.corridas.forEach(c => {
         if(!ultimosProtos.has(c.protocolo)){
           notif('nova', '🚖 Nova Solicitação!',
-            'Protocolo ' + c.protocolo + ' — ' + c.passageiro_nome + ' · ' + c.urgencia);
+            'Protocolo ' + c.protocolo + ' — ' + (c.passageiro_nome || '') + ' · ' + c.urgencia);
         }
       });
     }
@@ -1777,6 +1850,111 @@ function setFiltroAt(filtro, data = ''){
 }
 window.setFiltroUser = setFiltroUser;
 window.setFiltroAt   = setFiltroAt;
+// ── Formulário ────────────────────────────────────────────────
+function setTipo(t){
+  tipoSel = t;
+  $('t-imed').classList.toggle('sel', t === 'imediata');
+  $('t-aged').classList.toggle('sel', t === 'agendada');
+  $$('.sched-f').forEach(el => el.classList.toggle('on', t === 'agendada'));
+}
+function setUrg(u){
+  urgSel = u;
+  $('u-norm').classList.toggle('sel', u === 'normal');
+  $('u-urg').classList.toggle('sel',  u === 'urgente');
+}
+function pgAlert(t, m){
+  const el = $('pg-alert');
+  el.className = 'page-alert ' + t;
+  el.textContent = m;
+  el.scrollIntoView({ behavior:'smooth', block:'start' });
+  if(t !== 'warn') setTimeout(() => el.style.display = 'none', 6000);
+}
+function validarForm(){
+  const campos = [
+    { id:'f-pass', msg:'Informe o nome do passageiro.' },
+    { id:'f-tel',  msg:'Informe o telefone.' },
+    { id:'f-orig', msg:'Informe a origem.' },
+    { id:'f-dest', msg:'Informe o destino.' },
+    { id:'f-cc',   msg:'Selecione o centro de custo.' },
+    { id:'f-mot',  msg:'Informe o motivo.' },
+  ];
+  for(const c of campos){
+    if(!$(c.id).value.trim()){ pgAlert('error', c.msg); $(c.id).focus(); return false; }
+  }
+  if(!tipoSel){ pgAlert('error','Selecione o tipo.'); return false; }
+  if(tipoSel === 'agendada'){
+    if(!$('f-data').value){ pgAlert('error','Informe a data.'); return false; }
+    if(!$('f-hora').value){ pgAlert('error','Informe o horário.'); return false; }
+  }
+  if(!urgSel){ pgAlert('error','Selecione a urgência.'); return false; }
+  return true;
+}
+async function enviarSolicitacao(){
+  if(!validarForm()) return;
+  const btn = $('btn-env');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Enviando...';
+  const data = $('f-data').value, hora = $('f-hora').value;
+  const payload = {
+    passageiro_nome:     $('f-pass').value.trim(),
+    passageiro_telefone: $('f-tel').value.trim(),
+    origem:              $('f-orig').value.trim(),
+    destino:             $('f-dest').value.trim(),
+    tipo:                tipoSel,
+    dt_solicitada:       tipoSel === 'agendada' ? fmtData(data) + ' às ' + hora : 'Imediata',
+    urgencia:            urgSel,
+    centro_custo:        $('f-cc').value,
+    motivo:              $('f-mot').value.trim(),
+  };
+  try {
+    const res = await apiCall('POST', '/corridas', payload);
+    if(!res.ok){ pgAlert('error', res.msg || 'Erro ao enviar.'); btn.disabled=false; btn.textContent='Enviar Solicitação para a Central'; return; }
+    $('proto-num').textContent = res.protocolo || '#------';
+    $('form-panel').style.display    = 'none';
+    $('success-panel').style.display = 'block';
+    window.scrollTo({ top:0, behavior:'smooth' });
+  } catch(e){
+    pgAlert('error','Erro de conexão. Tente novamente.');
+    btn.disabled = false; btn.textContent = 'Enviar Solicitação para a Central';
+  }
+}
+function novaSolic(){
+  $('success-panel').style.display = 'none';
+  $('form-panel').style.display    = 'block';
+  $('pg-alert').style.display      = 'none';
+  ['f-pass','f-tel','f-orig','f-dest','f-mot','f-data','f-hora'].forEach(id => $(id).value = '');
+  $('f-cc').value = '';
+  tipoSel = ''; urgSel = '';
+  ['t-imed','t-aged','u-norm','u-urg'].forEach(id => $(id).classList.remove('sel'));
+  $$('.sched-f').forEach(el => el.classList.remove('on'));
+  const btn = $('btn-env');
+  btn.disabled = false; btn.textContent = 'Enviar Solicitação para a Central';
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+window.setTipo           = setTipo;
+window.setUrg            = setUrg;
+window.enviarSolicitacao = enviarSolicitacao;
+window.novaSolic         = novaSolic;
+window.refreshCurrent    = function(){ if(currentPanel==="minhas") carregarUser(); if(currentPanel==="atendente") carregarAtendente(); };
+window.acao              = acao;
+window.acaoCorrida       = acaoCorrida;
+window.acaoCancelar      = acaoCancelar;
+window.assumirEAbrirModal = assumirEAbrirModal;
+window.abrirModalDetalhes = abrirModalDetalhes;
+window.abrirModalDetalhesCard = abrirModalDetalhesCard;
+window.abrirRevisao      = abrirRevisao;
+window.confirmarRevisao  = confirmarRevisao;
+window.abrirEdicaoSolicitacao = abrirEdicaoSolicitacao;
+window.salvarEdicaoSolicitacao = salvarEdicaoSolicitacao;
+window.abrirModalUsuario = abrirModalUsuario;
+window.fecharModal       = fecharModal;
+window.criarUsuario      = criarUsuario;
+window.salvarUsuario     = salvarUsuario;
+window.toggleAtivo       = toggleAtivo;
+window.resetarSenha      = resetarSenha;
+window.editarUsuario     = editarUsuario;
+window.carregarUsuarios  = carregarUsuarios;
+window.fazerLogout       = fazerLogout;
 
 // ── Helpers de data/tempo ────────────────────────────────────
 function minutosDesde(dtCriacao){
@@ -1839,7 +2017,7 @@ function mostrarSkeletonAt(){
 function renderUser(){
   buildDateFilter('df-user', filtroDataUser, 'setFiltroUser');
   const filtered   = corridasUser.filter(c => passaFiltroData(c, filtroDataUser, rangeDeUser, rangeAteUser));
-  const pendente   = filtered.filter(c => c.status === 'Recebido');
+  const pendente   = filtered.filter(c => c.status === 'Recebido' || c.status === 'Em revisão');
   const atend      = filtered.filter(c => c.status === 'Em atendimento');
   const concluido  = filtered.filter(c => c.status === 'Concluído');
   const cancelado  = filtered.filter(c => c.status === 'Cancelado');
@@ -1854,17 +2032,25 @@ function renderUser(){
 function renderAt(){
   buildDateFilter('df-at', filtroDataAt, 'setFiltroAt');
   const q = searchAt || '';
+
   const filtered = corridasAt.filter(c => {
+    const protocolo = String(c.protocolo || '').toLowerCase();
+    const passageiro = String(c.passageiro_nome || '').toLowerCase();
+    const solicitante = String(c.solicitante_nome || '').toLowerCase();
+
     const fq = !q ||
-      c.protocolo.toLowerCase().includes(q) ||
-      c.passageiro_nome.toLowerCase().includes(q) ||
-      (c.solicitante_nome || '').toLowerCase().includes(q);
+      protocolo.includes(q) ||
+      passageiro.includes(q) ||
+      solicitante.includes(q);
+
     return fq && passaFiltroData(c, filtroDataAt, rangeDeAt, rangeAteAt);
   });
-  const pendente  = filtered.filter(c => c.status === 'Recebido');
+
+  const pendente  = filtered.filter(c => c.status === 'Recebido' || c.status === 'Em revisão');
   const atend     = filtered.filter(c => c.status === 'Em atendimento');
   const concluido = filtered.filter(c => c.status === 'Concluído');
   const cancelado = filtered.filter(c => c.status === 'Cancelado');
+
   $('kanban-at').innerHTML =
     kbCol('pendente',   'Aguardando',     pendente,  pendente.map(c  => kbCardAt(c)).join('')) +
     kbCol('atendimento','Em Atendimento', atend,     atend.map(c     => kbCardAt(c)).join('')) +
@@ -1890,24 +2076,25 @@ function kbCol(tipo, nome, items, cardsHtml){
 
 function kbStatusChip(s){
   const cls = {'Recebido':'recebido','Em atendimento':'atendimento',
-               'Corrida solicitada':'solicitada','Concluído':'concluido','Cancelado':'cancelado'};
+               'Corrida solicitada':'solicitada','Concluído':'concluido','Cancelado':'cancelado','Em revisão':'recebido'};
   const lbl = {'Recebido':'Recebido','Em atendimento':'Em Atendimento',
-               'Corrida solicitada':'Corrida Solicitada','Concluído':'Concluído','Cancelado':'Cancelado'};
+               'Corrida solicitada':'Corrida Solicitada','Concluído':'Concluído','Cancelado':'Cancelado','Em revisão':'Em Revisão'};
   return `<span class="kb-status-chip ${cls[s]||'recebido'}">${lbl[s]||s}</span>`;
 }
 
 function kbCard(c, isAt){
-  // Adapta campos da nova API (snake_case)
-  const proto    = c.protocolo       || '';
-  const pass     = c.passageiro_nome || '';
-  const orig     = c.origem          || '';
-  const dest     = c.destino         || '';
-  const solNome  = c.solicitante_nome|| '';
-  const dtSol    = c.dt_solicitada   || '';
-  const cc       = c.centro_custo    || '';
-  const atNome   = c.atendente_nome  || '';
-  const dtConc   = c.dt_conclusao    ? fmtDt(c.dt_conclusao) : '';
-  const criado   = c.criado_em       ? fmtDt(c.criado_em)    : '';
+  const id       = esc(c.id || '');
+  const proto    = esc(c.protocolo || '');
+  const pass     = esc(c.passageiro_nome || '');
+  const orig     = esc(c.origem || '');
+  const dest     = esc(c.destino || '');
+  const solNome  = esc(c.solicitante_nome || '');
+  const dtSol    = esc(c.dt_solicitada || '');
+  const cc       = esc(c.centro_custo || '');
+  const atNome   = esc(c.atendente_nome || '');
+  const obsRev   = esc(c.observacao_revisao || '');
+  const dtConc   = c.dt_conclusao ? fmtDt(c.dt_conclusao) : '';
+  const criado   = c.criado_em ? fmtDt(c.criado_em) : '';
 
   const urgClass    = c.urgencia === 'urgente' ? ' urgente' : '';
   const urgTag      = c.urgencia === 'urgente' ? '<span class="kb-urg-tag">URGENTE</span>' : '';
@@ -1935,108 +2122,338 @@ function kbCard(c, isAt){
     </div>
     ${conclusaoInfo}
     ${atInfo}
+    ${c.status==='Em revisão'?`<div class="kb-actions">
+      <div class="rev-obs-box"><div class="rev-obs-label">⚠ Revisão solicitada pelo atendente</div>${obsRev}</div>
+      <button class="kb-btn kb-btn-assumir" onclick="abrirEdicaoSolicitacao('${c.id}')">✏ Editar solicitação</button>
+    </div>`:''}
   </div>`;
+}
+
+function waLink(telefone, nome, mensagem){
+  var tel = (telefone||'').replace(/\D/g,'');
+  if(!tel) return '';
+  var msg = encodeURIComponent(mensagem || ('Olá ' + (nome||'')));
+  var isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+  return isMobile
+    ? 'whatsapp://send?phone=55' + tel + '&text=' + msg
+    : 'https://web.whatsapp.com/send?phone=55' + tel + '&text=' + msg;
+}
+
+function waIcon(){
+  return '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
+}
+
+function waBtn(href, nome){
+  if(!href) return '';
+  return '<a href="' + href + '" target="_blank" onclick="event.stopPropagation()" title="WhatsApp ' + nome + '"'
+    + ' style="display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;'
+    + 'background:#25D366;color:#fff;font-size:10px;font-weight:600;text-decoration:none;flex-shrink:0;">'
+    + waIcon() + ' Chamar</a>';
+}
+
+function avatarCircle(nome, bg, color){
+  var initials = (nome||'?').split(' ').map(function(n){return n[0];}).slice(0,2).join('').toUpperCase();
+  return '<div style="width:28px;height:28px;border-radius:50%;background:' + bg + ';color:' + color + ';'
+    + 'display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">'
+    + initials + '</div>';
 }
 
 function kbCardAt(c){
-  const done     = c.status === 'Concluído' || c.status === 'Cancelado';
-  const atNome   = c.atendente_nome || '';
-  const urgClass = c.urgencia === 'urgente' ? ' urgente' : '';
-  const urgTag   = c.urgencia === 'urgente' ? '<span class="kb-urg-tag">URGENTE</span>' : '';
+  const id = esc(c.id || '');
+  const protocolo = esc(c.protocolo || '');
+  const passageiroNome = esc(c.passageiro_nome || '');
+  const passageiroTelefone = esc(c.passageiro_telefone || '');
+  const solicitanteNome = esc(c.solicitante_nome || '');
+  const solicitanteUnidade = esc(c.solicitante_unidade || c.unidade || '');
+  const origem = esc(c.origem || '');
+  const destino = esc(c.destino || '');
+  const motivo = esc(c.motivo || '—');
+  const centroCusto = esc(c.centro_custo || '—');
+  const dtSolicitada = esc(c.dt_solicitada || '');
+  const observacaoRevisao = esc(c.observacao_revisao || '');
+  const atendenteNome = esc(c.atendente_nome || '');
+  const done         = c.status === 'Concluído' || c.status === 'Cancelado';
+  const emRevisao    = c.status === 'Em revisão';
+  const atNome       = c.atendente_nome || '';
+  const urgClass     = c.urgencia === 'urgente' ? ' urgente' : '';
+  const urgTag       = c.urgencia === 'urgente' ? '<span class="kb-urg-tag">URGENTE</span>' : '';
+  const revTag       = emRevisao ? '<span class="kb-rev-tag">REVISÃO</span>' : '';
   const atencaoClass = (c.status === 'Recebido' && minutosDesde(c.criado_em) >= 5) ? ' atencao' : '';
-  const atInfo   = atNome ? `<div class="kb-atendente"><div class="kb-at-av">${atNome.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>${atNome}</div>` : '';
-  const dtConc   = c.dt_conclusao ? fmtDt(c.dt_conclusao) : '';
-  const conclusaoInfo = dtConc ? `<div style="font-size:11px;color:var(--st-green-tx);padding:6px 0 0;display:flex;align-items:center;gap:4px"><span>✓</span>Encerrado em ${dtConc}</div>` : '';
+  const revisaoClass = emRevisao ? ' revisao' : '';
+  const dtConc       = c.dt_conclusao ? fmtDt(c.dt_conclusao) : '';
+  const conclusaoInfo = dtConc ? '<div style="font-size:11px;color:var(--st-green-tx);padding:4px 0 0">✓ Encerrado em ' + dtConc + '</div>' : '';
+  const obsRevisao   = observacaoRevisao ? '<div class="rev-obs-box"><div class="rev-obs-label">Obs. do atendente</div>' + observacaoRevisao + '</div>' : '';
+  const atInfo       = atNome ? '<div class="kb-atendente"><div class="kb-at-av">' + atNome.split(' ').map(function(n){return n[0];}).slice(0,2).join('') + '</div>' + atNome + '</div>' : '';
 
-  let actions = '';
-  if(c.status === 'Recebido'){
-    actions = `<div class="kb-actions">
-      <button class="kb-btn kb-btn-assumir" onclick="acao('${c.id}','assumir')">Assumir atendimento</button>
-    </div>`;
+  var tipoLabel = c.tipo === 'agendada' ? '📅 Agendada' : '⚡ Imediata';
+  var urgLabel  = c.urgencia === 'urgente' ? '🔴 Urgente' : '🟢 Normal';
+
+  // WhatsApp — solicitante
+  var waSolHref = waLink(
+    c.solicitante_telefone,
+    solicitanteNome,
+    'Olá ' + (solicitanteNome||'') + ', temos uma atualização sobre a solicitação de corrida (protocolo ' + (c.protocolo||'') + '). Poderia me ajudar?'
+  );
+
+  // WhatsApp — passageiro
+  var waPassHref = waLink(
+    c.passageiro_telefone,
+    passageiroNome,
+    'Olá ' + (passageiroNome||'') + ', sua corrida (protocolo ' + (c.protocolo||'') + ') está sendo providenciada!'
+  );
+
+  // Bloco solicitante
+  var blocoSolicitante = '<div style="margin:8px 10px 6px;padding:8px 10px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border)">'
+    + '<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Solicitante</div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">'
+    +   '<div style="display:flex;align-items:center;gap:8px;min-width:0">'
+    +     avatarCircle(solicitanteNome, '#E0E7FF', '#3730A3')
+    +     '<div style="min-width:0">'
+    +       '<div style="font-size:12px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (solicitanteNome||'—') + '</div>'
+    +       '<div style="font-size:10px;color:var(--text2)">' + (c.solicitante_unidade||c.unidade||'') + '</div>'
+    +     '</div>'
+    +   '</div>'
+    +   waBtn(waSolHref, solicitanteNome||'')
+    + '</div>'
+    + '</div>';
+
+  // Bloco passageiro
+  var blocoPassageiro = '<div style="margin:0 10px 8px;padding:8px 10px;background:var(--surface-2);border-radius:var(--radius-sm);border:1px solid var(--border)">'
+    + '<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Passageiro</div>'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">'
+    +   '<div style="display:flex;align-items:center;gap:8px;min-width:0">'
+    +     avatarCircle(passageiroNome, '#D1FAE5', '#065F46')
+    +     '<div style="min-width:0">'
+    +       '<div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + (passageiroNome||'—') + '</div>'
+    +       '<div style="font-size:10px;color:var(--text2)">' + (c.passageiro_telefone||'Sem telefone') + '</div>'
+    +     '</div>'
+    +   '</div>'
+    +   waBtn(waPassHref, passageiroNome||'')
+    + '</div>'
+    + '</div>';
+
+  // Ações
+  var actions = '';
+  if(c.status === 'Recebido' || emRevisao){
+    actions = '<div class="kb-actions">'
+      + '<button class="kb-btn kb-btn-assumir" style="flex:1" onclick="assumirEAbrirModal(\'' + c.id + '\')">Assumir atendimento</button>'
+      + '</div>';
   } else if(c.status === 'Em atendimento' && atNome){
-    actions = `<div class="kb-actions">
-      <button class="kb-blocked">🔒 ${atNome}</button>
-      <button class="kb-btn kb-btn-corrida" onclick="acaoCorrida('${c.id}')">✓ Corrida Solicitada</button>
-      <button class="kb-btn kb-btn-cancelar" onclick="acaoCancelar('${c.id}')">Cancelar</button>
-    </div>`;
+    actions = '<div class="kb-actions">'
+      + '<button class="kb-blocked">🔒 ' + atNome + '</button>'
+      + '<button class="kb-btn kb-btn-corrida" onclick="acaoCorrida(\'' + c.id + '\')">✓ Corrida Solicitada</button>'
+      + '<button class="kb-btn" style="background:var(--st-amber-bg);color:var(--st-amber-tx);border:1px solid #FCD34D" onclick="abrirRevisao(\'' + c.id + '\',\'' + c.protocolo + '\')">↩ Solicitar Revisão</button>'
+      + '<button class="kb-btn kb-btn-cancelar" onclick="acaoCancelar(\'' + c.id + '\')">Cancelar</button>'
+      + '</div>';
   } else if(done){
-    actions = `<div class="kb-actions">
-      <div style="text-align:center;font-size:11px;font-weight:600;padding:6px;color:var(--st-green-tx);background:var(--st-green-bg);border-radius:var(--radius-sm)">
-        ✓ Concluído
-      </div>
-      <button class="kb-btn kb-btn-reabrir" onclick="acao('${c.id}','reabrir')">↩ Reabrir</button>
-    </div>`;
+    actions = '<div class="kb-actions">'
+      + '<div style="text-align:center;font-size:11px;font-weight:600;padding:6px;color:var(--st-green-tx);background:var(--st-green-bg);border-radius:var(--radius-sm)">✓ ' + c.status + '</div>'
+      + '<button class="kb-btn kb-btn-reabrir" onclick="acao(\'' + c.id + '\',\'reabrir\')">↩ Reabrir</button>'
+      + '</div>';
   }
 
-  return `<div class="kb-card${urgClass}${atencaoClass}">
-    <div class="kb-card-top">
-      <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">${kbStatusChip(c.status)}</div>
-      ${urgTag}
-    </div>
-    <div class="kb-proto">${c.protocolo} · ${fmtDt(c.criado_em)}</div>
-    <div class="kb-sol"><span style="color:var(--text3)">↑</span>${c.solicitante_nome||''}</div>
-    <div class="kb-pass">${c.passageiro_nome||''}</div>
-    <div class="kb-route">
-      <div class="kb-route-row"><div class="kb-dot o"></div><span>${c.origem||''}</span></div>
-      <div class="kb-route-line"></div>
-      <div class="kb-route-row"><div class="kb-dot d"></div><span>${c.destino||''}</span></div>
-    </div>
-    <div class="kb-meta">
-      <span class="kb-dt">${c.dt_solicitada||''}</span>
-      <span class="kb-cc">${c.centro_custo||''}</span>
-    </div>
-    ${conclusaoInfo}
-    ${atInfo}
-    ${actions}
-  </div>`;
+  return '<div class="kb-card' + urgClass + atencaoClass + revisaoClass + '" onclick="abrirModalDetalhesCard(\'' + c.id + '\')" style="cursor:pointer">'
+    + '<div class="kb-card-top">'
+    +   '<div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">' + kbStatusChip(c.status) + revTag + '</div>'
+    +   urgTag
+    + '</div>'
+    + '<div class="kb-proto">' + c.protocolo + ' · ' + fmtDt(c.criado_em) + '</div>'
+    + blocoSolicitante
+    + blocoPassageiro
+    + '<div class="kb-route" style="padding:0 10px 6px">'
+    +   '<div class="kb-route-row"><div class="kb-dot o"></div><span>' + (origem||'') + '</span></div>'
+    +   '<div class="kb-route-line"></div>'
+    +   '<div class="kb-route-row"><div class="kb-dot d"></div><span>' + (destino||'') + '</span></div>'
+    + '</div>'
+    + '<div style="font-size:11px;color:var(--text2);margin:0 10px 6px"><span style="font-weight:600;color:var(--text)">Motivo:</span> ' + (motivo||'—') + '</div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 10px 8px">'
+    +   '<div style="background:var(--surface-2);border-radius:var(--radius-sm);padding:5px 8px">'
+    +     '<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Tipo</div>'
+    +     '<div style="font-size:11px;font-weight:600;color:var(--text);margin-top:1px">' + tipoLabel + '</div>'
+    +     '<div style="font-size:10px;color:var(--text2)">' + urgLabel + '</div>'
+    +   '</div>'
+    +   '<div style="background:var(--surface-2);border-radius:var(--radius-sm);padding:5px 8px">'
+    +     '<div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em">Centro de Custo</div>'
+    +     '<div style="font-size:11px;font-weight:600;color:var(--text);margin-top:1px">' + (centroCusto||'—') + '</div>'
+    +     '<div style="font-size:10px;color:var(--text2)">' + (c.dt_solicitada||'') + '</div>'
+    +   '</div>'
+    + '</div>'
+    + obsRevisao
+    + conclusaoInfo
+    + atInfo
+    + actions
+    + '</div>';
 }
 
-// ── Ações ────────────────────────────────────────────────────
-async function acaoCorrida(id){
-  try {
-    // Passo 1: marca corrida solicitada
-    const r1 = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'corrida' });
-    if(!r1.ok){ notif('info','Atenção', r1.msg); return; }
-    // Passo 2: já conclui automaticamente
-    await new Promise(r => setTimeout(r, 500)); // pequena pausa para o banco processar
-    const r2 = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'concluido' });
-    if(!r2.ok){ notif('info','Atenção', r2.msg); return; }
-    notif('status','✅ Corrida concluída!','A corrida foi finalizada com sucesso.');
-    await carregarAtendente(true);
-  } catch(e){ notif('info','Erro','Não foi possível concluir a corrida.'); }
-}
-window.acaoCorrida = acaoCorrida;
 
+// ── Ações corridas ───────────────────────────────────────────
 async function acao(id, subacao){
   try {
     const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: subacao });
     if(!res.ok){ notif('info','Atenção', res.msg); return; }
     notif('status','✅ Atualizado','Status → ' + res.novoStatus);
     await carregarAtendente(true);
-  } catch(e){ notif('info','Erro','Não foi possível atualizar. Tente novamente.'); }
+  } catch(e){ notif('info','Erro','Não foi possível atualizar.'); }
+}
+
+async function acaoCorrida(id){
+  try {
+    const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'concluido' });
+    if(!res.ok){ notif('info','Atenção', res.msg); return; }
+    notif('status','✅ Corrida concluída!','A corrida foi finalizada com sucesso.');
+    await carregarAtendente(true);
+  } catch(e){ notif('info','Erro','Não foi possível concluir.'); }
 }
 
 async function acaoCancelar(id){
   const motivo = prompt('Motivo do cancelamento:');
   if(!motivo) return;
   try {
-    const res = await apiCall('PATCH', '/corridas/' + id + '/status',
-      { acao: 'cancelar', motivo_cancelamento: motivo });
+    const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'cancelar', motivo_cancelamento: motivo });
     if(!res.ok){ notif('info','Atenção', res.msg); return; }
     notif('status','✅ Cancelado','Corrida cancelada.');
     await carregarAtendente(true);
   } catch(e){ notif('info','Erro','Não foi possível cancelar.'); }
 }
 
-window.acao         = acao;
-window.acaoCancelar = acaoCancelar;
+async function assumirEAbrirModal(id){
+  try {
+    const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'assumir' });
+    if(!res.ok){ notif('info','Atenção', res.msg); return; }
+    await carregarAtendente(true);
+    const corrida = corridasAt.find(c => c.id === id);
+    if(corrida) abrirModalDetalhes(corrida);
+  } catch(e){ notif('info','Erro','Não foi possível assumir.'); }
+}
 
-// ── Gestão de Usuários (Admin) ────────────────────────────────
+function fecharModal(){
+  const m = $('modal-usuario');
+  if(m) m.remove();
+}
+
+function abrirModalDetalhes(c){
+  fecharModal();
+  const telSol = (c.solicitante_telefone||'').replace(/\D/g,'');
+  const waMsg  = encodeURIComponent('Olá ' + (solicitanteNome||'') + ', temos uma divergência com sua solicitação poderia me ajudar.');
+  const waBtnHtml = telSol ? '<a href="https://wa.me/55' + telSol + '?text=' + waMsg + '" target="_blank" class="btn-whatsapp"><svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> WhatsApp</a>' : '';
+  const modal = document.createElement('div');
+  modal.id = 'modal-usuario';
+  modal.className = 'modal-overlay';
+  const protocolo = esc(c.protocolo || '');
+const passageiroNome = esc(c.passageiro_nome || '');
+const passageiroTelefone = esc(c.passageiro_telefone || '—');
+const origem = esc(c.origem || '');
+const destino = esc(c.destino || '');
+const tipo = esc(c.tipo || '');
+const dtSolicitada = esc(c.dt_solicitada || '');
+const centroCusto = esc(c.centro_custo || '');
+const urgencia = esc(c.urgencia || '');
+const motivo = esc(c.motivo || '');
+const solicitanteNome = esc(c.solicitante_nome || '');
+const solicitanteUnidade = esc(c.solicitante_unidade || '');
+const atendenteNome = esc(c.atendente_nome || sessao.nome || '');
+  modal.innerHTML = '<div class="modal-box">'
+    + '<div class="modal-header"><div><div class="modal-title">' + c.protocolo + ' — Detalhes</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Assumida por ' + (c.atendente_nome||sessao.nome) + '</div></div><button class="modal-close" onclick="fecharModal()">✕</button></div>'
+    + '<div class="modal-body">'
+    + '<div class="modal-grid"><div class="modal-field"><span class="modal-label">Passageiro</span><span class="modal-value">' + (passageiroNome||'') + '</span></div><div class="modal-field"><span class="modal-label">Telefone</span><span class="modal-value">' + (c.passageiro_telefone||'—') + '</span></div></div>'
+    + '<div class="modal-field"><span class="modal-label">Origem</span><span class="modal-value">' + (origem||'') + '</span></div>'
+    + '<div class="modal-field"><span class="modal-label">Destino</span><span class="modal-value">' + (destino||'') + '</span></div>'
+    + '<div class="modal-grid"><div class="modal-field"><span class="modal-label">Tipo</span><span class="modal-value">' + (c.tipo||'') + '</span></div><div class="modal-field"><span class="modal-label">Data/Hora</span><span class="modal-value">' + (c.dt_solicitada||'') + '</span></div></div>'
+    + '<div class="modal-grid"><div class="modal-field"><span class="modal-label">Centro de Custo</span><span class="modal-value">' + (centroCusto||'') + '</span></div><div class="modal-field"><span class="modal-label">Urgência</span><span class="modal-value">' + (c.urgencia||'') + '</span></div></div>'
+    + '<div class="modal-field"><span class="modal-label">Motivo</span><span class="modal-value">' + (motivo||'') + '</span></div>'
+    + '<div class="modal-grid"><div class="modal-field"><span class="modal-label">Solicitante</span><span class="modal-value">' + (solicitanteNome||'') + '</span></div><div class="modal-field"><span class="modal-label">Unidade</span><span class="modal-value">' + (c.solicitante_unidade||'') + '</span></div></div>'
+    + waBtnHtml
+    + '</div>'
+    + '<div class="modal-footer">'
+    + '<button class="kb-btn kb-btn-corrida" style="flex:1" onclick="fecharModal();acaoCorrida(\'' + c.id + '\')">✓ Corrida Solicitada</button>'
+    + '<button class="kb-btn" style="flex:1;background:var(--st-amber-bg);color:var(--st-amber-tx);border:1px solid #FCD34D" onclick="fecharModal();abrirRevisao(\'' + c.id + '\',\'' + c.protocolo + '\')">↩ Solicitar Revisão</button>'
+    + '<button class="kb-btn kb-btn-cancelar" style="flex:1" onclick="fecharModal();acaoCancelar(\'' + c.id + '\')">Cancelar</button>'
+    + '</div></div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if(e.target === modal) fecharModal(); });
+}
+
+function abrirModalDetalhesCard(id){
+  const c = corridasAt.find(x => x.id === id);
+  if(c) abrirModalDetalhes(c);
+}
+
+function abrirRevisao(id, proto){
+  fecharModal();
+  const modal = document.createElement('div');
+  modal.id = 'modal-usuario';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = '<div class="modal-box" style="max-width:420px">'
+    + '<div class="modal-header"><div class="modal-title">Solicitar Revisão — ' + proto + '</div><button class="modal-close" onclick="fecharModal()">✕</button></div>'
+    + '<div class="modal-body"><p style="font-size:13px;color:var(--text2);margin-bottom:14px">Descreva o que precisa ser corrigido.</p>'
+    + '<div class="modal-field"><span class="modal-label">Observação <span style="color:var(--brand)">*</span></span><textarea class="ft" id="obs-revisao" placeholder="Ex: Endereço incompleto..." style="min-height:100px"></textarea></div></div>'
+    + '<div class="modal-footer"><button class="kb-btn kb-btn-assumir" style="flex:1" onclick="confirmarRevisao(\'' + id + '\')">Enviar para revisão</button><button class="kb-btn" style="flex:1;border:1px solid var(--border)" onclick="fecharModal()">Cancelar</button></div>'
+    + '</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if(e.target === modal) fecharModal(); });
+  setTimeout(() => $('obs-revisao')?.focus(), 100);
+}
+
+async function confirmarRevisao(id){
+  const obs = $('obs-revisao')?.value.trim();
+  if(!obs){ notif('info','Atenção','Descreva o que precisa ser corrigido.'); return; }
+  try {
+    const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'revisao', observacao_revisao: obs });
+    if(!res.ok){ notif('info','Atenção', res.msg); return; }
+    notif('status','↩ Revisão solicitada','O solicitante foi notificado.');
+    fecharModal();
+    await carregarAtendente(true);
+  } catch(e){ notif('info','Erro','Não foi possível solicitar revisão.'); }
+}
+
+function abrirEdicaoSolicitacao(id){
+  const c = corridasUser.find(x => x.id === id);
+  if(!c) return;
+  fecharModal();
+  const ccOptions = ['DEPTO - ARQAMBIENTAL','DEPTO - ARQUIVO','DEPTO - COMPRAS','DEPTO - CONTABILIDADE','DEPTO - ENGENHARIA','DEPTO - FINANCEIRO','DEPTO - JURIDICO','DEPTO - MANUTENÇÃO','DEPTO - MARKETING','DEPTO - RH','DEPTO - SEGURANÇA','DEPTO - SESMT','DEPTO - T.I','DEPTO - TRANSPORTE','DEPTO COMERCIAL - BAIXADA','DEPTO COMERCIAL - CAXIAS','DEPTO COMERCIAL - FLORIANOPOLIS','DEPTO COMERCIAL - GRD SÃO PAULO','DEPTO COMERCIAL - INTERIOR','DEPTO COMERCIAL - MINAS','DEPTO COMERCIAL - PORTO ALEGRE','DIRETORIA','OPERACAO - BAIXADA','OPERACAO - BOMBAS','OPERACAO - CAXIAS','OPERACAO - FLORIANOPOLIS','OPERACAO - INTERIOR','OPERACAO - MINAS','OPERACAO - PORTO ALEGRE','OPERACAO - SAO PAULO'];
+  const modal = document.createElement('div');
+  modal.id = 'modal-usuario';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = '<div class="modal-box" style="max-width:540px">'
+    + '<div class="modal-header"><div><div class="modal-title">Editar Solicitação — ' + c.protocolo + '</div><div style="font-size:11px;color:var(--st-amber-tx);margin-top:2px">⚠ Revisão solicitada pelo atendente</div></div><button class="modal-close" onclick="fecharModal()">✕</button></div>'
+    + '<div class="modal-body">'
+    + (observacaoRevisao ? '<div class="rev-obs-box" style="margin-bottom:16px"><div class="rev-obs-label">Obs. do atendente</div>' + observacaoRevisao + '</div>' : '')
+    + '<div class="modal-grid"><div class="modal-field"><span class="modal-label">Passageiro *</span><input class="fi" id="ed-pass" value="' + (passageiroNome||'') + '"></div><div class="modal-field"><span class="modal-label">Telefone *</span><input class="fi" id="ed-tel" value="' + (c.passageiro_telefone||'') + '"></div></div>'
+    + '<div class="modal-field" style="margin-bottom:12px"><span class="modal-label">Origem *</span><input class="fi" id="ed-orig" value="' + (origem||'') + '"></div>'
+    + '<div class="modal-field" style="margin-bottom:12px"><span class="modal-label">Destino *</span><input class="fi" id="ed-dest" value="' + (destino||'') + '"></div>'
+    + '<div class="modal-grid"><div class="modal-field"><span class="modal-label">Centro de Custo *</span><select class="fs" id="ed-cc">' + ccOptions.map(o => '<option' + (o===centroCusto?' selected':'') + '>' + o + '</option>').join('') + '</select></div>'
+    + '<div class="modal-field"><span class="modal-label">Urgência</span><select class="fs" id="ed-urg"><option' + (c.urgencia==='normal'?' selected':'') + '>normal</option><option' + (c.urgencia==='urgente'?' selected':'') + '>urgente</option></select></div></div>'
+    + '<div class="modal-field"><span class="modal-label">Motivo *</span><textarea class="ft" id="ed-mot" style="min-height:80px">' + (motivo||'') + '</textarea></div>'
+    + '</div>'
+    + '<div class="modal-footer"><button class="btn-submit" style="flex:1" onclick="salvarEdicaoSolicitacao(\'' + c.id + '\')">Salvar e reenviar</button><button class="kb-btn" style="flex:1;border:1px solid var(--border)" onclick="fecharModal()">Cancelar</button></div>'
+    + '</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if(e.target === modal) fecharModal(); });
+}
+
+async function salvarEdicaoSolicitacao(id){
+  const passageiro_nome     = $('ed-pass')?.value.trim();
+  const passageiro_telefone = $('ed-tel')?.value.trim();
+  const origem              = $('ed-orig')?.value.trim();
+  const destino             = $('ed-dest')?.value.trim();
+  const centro_custo        = $('ed-cc')?.value;
+  const urgencia            = $('ed-urg')?.value;
+  const motivo              = $('ed-mot')?.value.trim();
+  if(!passageiro_nome||!origem||!destino||!centro_custo||!motivo){ notif('info','Atenção','Preencha todos os campos.'); return; }
+  try {
+    const res = await apiCall('PATCH', '/corridas/' + id + '/editar', { passageiro_nome, passageiro_telefone, origem, destino, centro_custo, urgencia, motivo });
+    if(!res.ok){ notif('info','Atenção', res.msg); return; }
+    notif('status','✅ Solicitação corrigida','Reenviada para atendimento.');
+    fecharModal();
+    await carregarUser(true);
+  } catch(e){ notif('info','Erro','Não foi possível salvar.'); }
+}
+
+// ── Gestão de Usuários ───────────────────────────────────────
 async function carregarUsuarios(){
   const lista = $('lista-usuarios');
   if(!lista) return;
-  lista.innerHTML = `<div class="kb-empty"><div class="kb-empty-icon">👥</div>Carregando usuários...</div>`;
-
+  lista.innerHTML = '<div class="kb-empty"><div class="kb-empty-icon">👥</div>Carregando...</div>';
   try {
     const res = await apiCall('GET', '/usuarios');
     if(!res.ok){ notif('info','Erro','Não foi possível carregar usuários.'); return; }
@@ -2047,108 +2464,83 @@ async function carregarUsuarios(){
 function renderUsuarios(lista){
   const el = $('lista-usuarios');
   if(!el) return;
-  const perfilCor = { Administrador:'var(--st-purple-bg);color:var(--st-purple-tx)',
-                      Atendente:'var(--st-blue-bg);color:var(--st-blue-tx)',
-                      Solicitante:'var(--st-green-bg);color:var(--st-green-tx)' };
-  el.innerHTML = lista.map(u => `
-    <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-      <div style="width:36px;height:36px;border-radius:50%;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">
-        ${u.nome.split(' ').map(n=>n[0]).slice(0,2).join('')}
-      </div>
-      <div style="flex:1;min-width:160px">
-        <div style="font-size:13px;font-weight:600;color:var(--text)">${u.nome}</div>
-        <div style="font-size:11px;color:var(--text2)">${u.email} · ${u.unidade}</div>
-      </div>
-      <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:${perfilCor[u.perfil]||'var(--surface-2);color:var(--text2)'}">${u.perfil}</span>
-      <span style="font-size:11px;padding:3px 10px;border-radius:100px;background:${u.ativo?'var(--st-green-bg)':'var(--st-red-bg)'};color:${u.ativo?'var(--st-green-tx)':'var(--st-red-tx)'}">${u.ativo?'Ativo':'Inativo'}</span>
-      <div style="display:flex;gap:6px">
-        <button class="reload-btn" onclick="editarUsuario('${u.id}','${u.nome}','${u.unidade}','${u.perfil}',${u.ativo})">Editar</button>
-        <button class="reload-btn" onclick="resetarSenha('${u.id}','${u.nome}')">Reset senha</button>
-        <button class="reload-btn" style="color:${u.ativo?'var(--st-red-tx)':'var(--st-green-tx)'}"
-          onclick="toggleAtivo('${u.id}',${u.ativo})">${u.ativo?'Desativar':'Ativar'}</button>
-      </div>
-    </div>`).join('');
+  const perfilCor = { Administrador:'var(--st-purple-bg);color:var(--st-purple-tx)', Atendente:'var(--st-blue-bg);color:var(--st-blue-tx)', Solicitante:'var(--st-green-bg);color:var(--st-green-tx)' };
+  el.innerHTML = lista.map(u =>
+    '<div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">'
+    + '<div style="width:36px;height:36px;border-radius:50%;background:var(--black);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">' + u.nome.split(' ').map(n=>n[0]).slice(0,2).join('') + '</div>'
+    + '<div style="flex:1;min-width:160px"><div style="font-size:13px;font-weight:600">' + u.nome + '</div><div style="font-size:11px;color:var(--text2)">' + u.email + ' · ' + u.unidade + '</div>' + (u.telefone ? '<div style="font-size:11px;color:var(--text3)">📱 ' + u.telefone + '</div>' : '') + '</div>'
+    + '<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:' + (perfilCor[u.perfil]||'var(--surface-2);color:var(--text2)') + '">' + u.perfil + '</span>'
+    + '<span style="font-size:11px;padding:3px 10px;border-radius:100px;background:' + (u.ativo?'var(--st-green-bg)':'var(--st-red-bg)') + ';color:' + (u.ativo?'var(--st-green-tx)':'var(--st-red-tx)') + '">' + (u.ativo?'Ativo':'Inativo') + '</span>'
+    + '<div style="display:flex;gap:6px">'
+    + '<button class="reload-btn" onclick="editarUsuario(\'' + u.id + '\',\'' + u.nome + '\',\'' + u.unidade + '\',\'' + u.perfil + '\',' + u.ativo + ',\'' + (u.telefone||'') + '\')">Editar</button>'
+    + '<button class="reload-btn" onclick="resetarSenha(\'' + u.id + '\',\'' + u.nome + '\')">Reset senha</button>'
+    + '<button class="reload-btn" style="color:' + (u.ativo?'var(--st-red-tx)':'var(--st-green-tx)') + '" onclick="toggleAtivo(\'' + u.id + '\',' + u.ativo + ')">' + (u.ativo?'Desativar':'Ativar') + '</button>'
+    + '</div></div>'
+  ).join('');
 }
 
-function abrirModalUsuario(id='', nome='', unidade='', perfil='Solicitante', ativo=true){
+function abrirModalUsuario(id='', nome='', unidade='', perfil='Solicitante', ativo=true, tel=''){
+  fecharModal();
   const isEdit = !!id;
-  const titulo = isEdit ? 'Editar Usuário' : 'Novo Usuário';
   const unidades = ['Matriz - São Paulo','BAIXADA','CAXIAS','FLORIANOPOLIS','GRD SÃO PAULO','INTERIOR','MINAS','PORTO ALEGRE'];
-
   const modal = document.createElement('div');
   modal.id = 'modal-usuario';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px';
-  modal.innerHTML = `<div style="background:var(--white);border-radius:var(--radius-lg);padding:28px;width:100%;max-width:420px;box-shadow:var(--shadow-lg)">
-    <div style="font-size:16px;font-weight:700;margin-bottom:20px">${titulo}</div>
-    ${!isEdit?`<div class="fg" style="margin-bottom:14px"><label class="fl">E-mail <span class="req">*</span></label><input class="fi" id="mu-email" placeholder="nome@concreserv.com.br"></div>`:''}
-    <div class="fg" style="margin-bottom:14px"><label class="fl">Nome completo <span class="req">*</span></label><input class="fi" id="mu-nome" value="${nome}" placeholder="Nome completo"></div>
-    <div class="fg" style="margin-bottom:14px"><label class="fl">Unidade <span class="req">*</span></label>
-      <select class="fs" id="mu-unidade">${unidades.map(u=>`<option${u===unidade?' selected':''}>${u}</option>`).join('')}</select>
-    </div>
-    <div class="fg" style="margin-bottom:20px"><label class="fl">Perfil <span class="req">*</span></label>
-      <select class="fs" id="mu-perfil">
-        ${['Solicitante','Atendente','Administrador'].map(p=>`<option${p===perfil?' selected':''}>${p}</option>`).join('')}
-      </select>
-    </div>
-    <div style="display:flex;gap:8px">
-      <button class="btn-submit" onclick="${isEdit?`salvarUsuario('${id}')`:'criarUsuario()'}">
-        ${isEdit?'Salvar alterações':'Criar usuário'}
-      </button>
-      <button class="reload-btn" onclick="fecharModal()" style="width:auto;padding:0 20px">Cancelar</button>
-    </div>
-  </div>`;
+  modal.className = 'modal-overlay';
+  modal.innerHTML = '<div class="modal-box" style="max-width:420px">'
+    + '<div class="modal-header"><div class="modal-title">' + (isEdit?'Editar Usuário':'Novo Usuário') + '</div><button class="modal-close" onclick="fecharModal()">✕</button></div>'
+    + '<div class="modal-body">'
+    + (!isEdit ? '<div class="modal-field"><span class="modal-label">E-mail *</span><input class="fi" id="mu-email" placeholder="nome@concreserv.com.br"></div>' : '')
+    + '<div class="modal-field"><span class="modal-label">Nome completo *</span><input class="fi" id="mu-nome" value="' + nome + '" placeholder="Nome completo"></div>'
+    + '<div class="modal-field"><span class="modal-label">Telefone (WhatsApp)</span><input class="fi" id="mu-tel" value="' + tel + '" placeholder="(11) 99999-0000" oninput="fmtTel(this)"></div>'
+    + '<div class="modal-field"><span class="modal-label">Unidade *</span><select class="fs" id="mu-unidade">' + unidades.map(u => '<option' + (u===unidade?' selected':'') + '>' + u + '</option>').join('') + '</select></div>'
+    + '<div class="modal-field"><span class="modal-label">Perfil *</span><select class="fs" id="mu-perfil">' + ['Solicitante','Atendente','Administrador'].map(p => '<option' + (p===perfil?' selected':'') + '>' + p + '</option>').join('') + '</select></div>'
+    + '</div>'
+    + '<div class="modal-footer"><button class="btn-submit" style="flex:1" onclick="' + (isEdit ? 'salvarUsuario(\'' + id + '\')' : 'criarUsuario()') + '">' + (isEdit?'Salvar alterações':'Criar usuário') + '</button><button class="kb-btn" style="flex:1;border:1px solid var(--border)" onclick="fecharModal()">Cancelar</button></div>'
+    + '</div>';
   document.body.appendChild(modal);
-}
-
-function fecharModal(){
-  const m = $('modal-usuario');
-  if(m) m.remove();
 }
 
 async function criarUsuario(){
   const email   = $('mu-email')?.value.trim().toLowerCase();
   const nome    = $('mu-nome')?.value.trim();
+  const tel     = $('mu-tel')?.value.trim() || '';
   const unidade = $('mu-unidade')?.value;
   const perfil  = $('mu-perfil')?.value;
-  if(!email || !nome || !unidade || !perfil){ notif('info','Atenção','Preencha todos os campos.'); return; }
+  if(!email||!nome||!unidade||!perfil){ notif('info','Atenção','Preencha todos os campos.'); return; }
   if(!email.endsWith('@concreserv.com.br')){ notif('info','Atenção','Use e-mail @concreserv.com.br.'); return; }
   try {
-    const res = await apiCall('POST', '/usuarios', { email, nome, unidade, perfil });
+    const res = await apiCall('POST', '/usuarios', { email, nome, unidade, perfil, telefone: tel });
     if(!res.ok){ notif('info','Atenção', res.msg); return; }
-    notif('status','✅ Usuário criado!', nome + ' foi adicionado ao sistema.');
-    fecharModal();
-    carregarUsuarios();
+    notif('status','✅ Usuário criado!', nome + ' foi adicionado.');
+    fecharModal(); carregarUsuarios();
   } catch(e){ notif('info','Erro','Não foi possível criar o usuário.'); }
 }
 
 async function salvarUsuario(id){
   const nome    = $('mu-nome')?.value.trim();
+  const tel     = $('mu-tel')?.value.trim() || '';
   const unidade = $('mu-unidade')?.value;
   const perfil  = $('mu-perfil')?.value;
   try {
-    const res = await apiCall('PATCH', '/usuarios/' + id, { nome, unidade, perfil });
+    const res = await apiCall('PATCH', '/usuarios/' + id, { nome, unidade, perfil, telefone: tel });
     if(!res.ok){ notif('info','Atenção', res.msg); return; }
     notif('status','✅ Usuário atualizado!','Alterações salvas.');
-    fecharModal();
-    carregarUsuarios();
+    fecharModal(); carregarUsuarios();
   } catch(e){ notif('info','Erro','Não foi possível salvar.'); }
 }
 
 async function toggleAtivo(id, ativoAtual){
-  const acao2 = ativoAtual ? 'desativar' : 'ativar';
-  if(!confirm('Deseja ' + acao2 + ' este usuário?')) return;
+  if(!confirm('Deseja ' + (ativoAtual?'desativar':'ativar') + ' este usuário?')) return;
   try {
-    const res = ativoAtual
-      ? await apiCall('DELETE', '/usuarios/' + id)
-      : await apiCall('PATCH',  '/usuarios/' + id, { ativo: true });
+    const res = ativoAtual ? await apiCall('DELETE', '/usuarios/' + id) : await apiCall('PATCH', '/usuarios/' + id, { ativo: true });
     if(!res.ok){ notif('info','Atenção', res.msg); return; }
-    notif('status','✅ Concluído', 'Usuário ' + acao2 + 'do com sucesso.');
+    notif('status','✅ Concluído','Usuário ' + (ativoAtual?'desativado':'ativado') + '.');
     carregarUsuarios();
-  } catch(e){ notif('info','Erro','Não foi possível ' + acao2 + ' o usuário.'); }
+  } catch(e){ notif('info','Erro','Não foi possível alterar.'); }
 }
 
 async function resetarSenha(id, nome){
-  if(!confirm('Resetar senha de ' + nome + '? O usuário deverá redefinir no próximo acesso.')) return;
+  if(!confirm('Resetar senha de ' + nome + '?')) return;
   try {
     const res = await apiCall('PATCH', '/usuarios/' + id + '/reset-senha');
     if(!res.ok){ notif('info','Atenção', res.msg); return; }
@@ -2156,113 +2548,13 @@ async function resetarSenha(id, nome){
   } catch(e){ notif('info','Erro','Não foi possível resetar a senha.'); }
 }
 
-function editarUsuario(id, nome, unidade, perfil, ativo){
-  abrirModalUsuario(id, nome, unidade, perfil, ativo);
+function editarUsuario(id, nome, unidade, perfil, ativo, tel){
+  abrirModalUsuario(id, nome, unidade, perfil, ativo, tel||'');
 }
 
-window.abrirModalUsuario = abrirModalUsuario;
-window.fecharModal       = fecharModal;
-window.criarUsuario      = criarUsuario;
-window.salvarUsuario     = salvarUsuario;
-window.toggleAtivo       = toggleAtivo;
-window.resetarSenha      = resetarSenha;
-window.editarUsuario     = editarUsuario;
-window.carregarUsuarios  = carregarUsuarios;
-
-// ── Formulário nova solicitação ───────────────────────────────
-function setTipo(t){
-  tipoSel = t;
-  $('t-imed').classList.toggle('sel', t === 'imediata');
-  $('t-aged').classList.toggle('sel', t === 'agendada');
-  $$('.sched-f').forEach(el => el.classList.toggle('on', t === 'agendada'));
-}
-function setUrg(u){
-  urgSel = u;
-  $('u-norm').classList.toggle('sel', u === 'normal');
-  $('u-urg').classList.toggle('sel',  u === 'urgente');
-}
-function pgAlert(t, m){
-  const el = $('pg-alert');
-  el.className = 'page-alert ' + t;
-  el.textContent = m;
-  el.scrollIntoView({ behavior:'smooth', block:'start' });
-  if(t !== 'warn') setTimeout(() => el.style.display = 'none', 6000);
-}
-function validarForm(){
-  const campos = [
-    { id:'f-pass', msg:'Informe o nome do passageiro.' },
-    { id:'f-tel',  msg:'Informe o telefone.' },
-    { id:'f-orig', msg:'Informe a origem.' },
-    { id:'f-dest', msg:'Informe o destino.' },
-    { id:'f-cc',   msg:'Selecione o centro de custo.' },
-    { id:'f-mot',  msg:'Informe o motivo.' },
-  ];
-  for(const c of campos){
-    if(!$(c.id).value.trim()){ pgAlert('error', c.msg); $(c.id).focus(); return false; }
-  }
-  if(!tipoSel){ pgAlert('error','Selecione o tipo.'); return false; }
-  if(tipoSel === 'agendada'){
-    if(!$('f-data').value){ pgAlert('error','Informe a data.'); return false; }
-    if(!$('f-hora').value){ pgAlert('error','Informe o horário.'); return false; }
-  }
-  if(!urgSel){ pgAlert('error','Selecione a urgência.'); return false; }
-  return true;
-}
-
-async function enviarSolicitacao(){
-  if(!validarForm()) return;
-  const btn = $('btn-env');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Enviando...';
-  const data = $('f-data').value, hora = $('f-hora').value;
-  const payload = {
-    passageiro_nome:     $('f-pass').value.trim(),
-    passageiro_telefone: $('f-tel').value.trim(),
-    origem:              $('f-orig').value.trim(),
-    destino:             $('f-dest').value.trim(),
-    tipo:                tipoSel,
-    dt_solicitada:       tipoSel === 'agendada' ? fmtData(data) + ' às ' + hora : 'Imediata',
-    urgencia:            urgSel,
-    centro_custo:        $('f-cc').value,
-    motivo:              $('f-mot').value.trim(),
-  };
-  try {
-    const res = await apiCall('POST', '/corridas', payload);
-    if(!res.ok){ pgAlert('error', res.msg || 'Erro ao enviar.'); btn.disabled=false; btn.textContent='Enviar Solicitação para a Central'; return; }
-    $('proto-num').textContent = res.protocolo || '#------';
-    $('form-panel').style.display    = 'none';
-    $('success-panel').style.display = 'block';
-    window.scrollTo({ top:0, behavior:'smooth' });
-  } catch(e){
-    pgAlert('error','Erro de conexão. Tente novamente.');
-    btn.disabled = false; btn.textContent = 'Enviar Solicitação para a Central';
-  }
-}
-
-function novaSolic(){
-  $('success-panel').style.display = 'none';
-  $('form-panel').style.display    = 'block';
-  $('pg-alert').style.display      = 'none';
-  ['f-pass','f-tel','f-orig','f-dest','f-mot','f-data','f-hora'].forEach(id => $(id).value = '');
-  $('f-cc').value = '';
-  tipoSel = ''; urgSel = '';
-  ['t-imed','t-aged','u-norm','u-urg'].forEach(id => $(id).classList.remove('sel'));
-  $$('.sched-f').forEach(el => el.classList.remove('on'));
-  const btn = $('btn-env');
-  btn.disabled = false; btn.textContent = 'Enviar Solicitação para a Central';
-  window.scrollTo({ top:0, behavior:'smooth' });
-}
-
-window.setTipo            = setTipo;
-window.setUrg             = setUrg;
-window.enviarSolicitacao  = enviarSolicitacao;
-window.novaSolic          = novaSolic;
-window.refreshCurrent     = () => { if(currentPanel==='minhas') carregarUser(); if(currentPanel==='atendente') carregarAtendente(); };
-
-// ── Logout ────────────────────────────────────────────────────
 async function fazerLogout(){
   if(!confirm('Deseja sair?')) return;
   pararPolling();
-  if(realtimeSub) await supabase.removeChannel(realtimeSub);
   sessao = null; emailAtual = '';
   ultimosProtos = new Set(); ultimosStatus = {};
   corridasAt = []; corridasUser = [];
@@ -2271,8 +2563,73 @@ async function fazerLogout(){
   ['inp-email','inp-senha','inp-nova','inp-conf'].forEach(id => $(id).value = '');
   showStep('email');
 }
-window.fazerLogout = fazerLogout;
 
 </script>
+
+<!-- ============================================================
+  PWA — Service Worker + Notificações Push
+  ============================================================ -->
+<script>
+// ── Registro do Service Worker ─────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/concreserv-uber/service-worker.js')
+      .then(reg => {
+        console.log('[PWA] Service Worker registrado:', reg.scope);
+      })
+      .catch(err => console.error('[PWA] Erro ao registrar SW:', err));
+  });
+}
+
+// ── Chave pública VAPID (substitua pela gerada no backend) ─────
+// Gere com: npx web-push generate-vapid-keys
+const VAPID_PUBLIC_KEY = 'SUBSTITUA_PELA_SUA_CHAVE_PUBLICA_VAPID';
+
+// ── Solicitar permissão de notificação ─────────────────────────
+// Chamada automaticamente após login bem-sucedido
+async function solicitarPermissaoNotificacao() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    await registrarPushSubscription();
+    return;
+  }
+  if (Notification.permission !== 'denied') {
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') await registrarPushSubscription();
+  }
+}
+
+// ── Registra subscription de push no backend ───────────────────
+async function registrarPushSubscription() {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+    // Só envia ao backend se VAPID já estiver configurada
+    if (!VAPID_PUBLIC_KEY.startsWith('SUBSTITUA')) {
+      await apiCall('POST', '/push/subscribe', sub.toJSON());
+      console.log('[PWA] Push subscription registrada.');
+    }
+  } catch (err) {
+    console.warn('[PWA] Push subscription não registrada:', err.message);
+  }
+}
+
+// ── Utilitário: converte VAPID key base64 → Uint8Array ─────────
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = window.atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+</script>
+
 </body>
 </html>
