@@ -1599,7 +1599,7 @@ async function fazerLogin(){
   try {
     const res = await apiCall('POST', '/auth/login', { email: emailAtual, senha });
     if(!res.ok){ setAl('senha','error', res.msg); $('inp-senha').value = ''; }
-    else { sessao = res; abrirApp(); }
+    else { sessao = res; localStorage.setItem('concreserv_sessao', JSON.stringify(res)); abrirApp(); }
   } catch(e){ setAl('senha','error','Erro de conexão.'); }
   btn.disabled = false; btn.textContent = 'Entrar';
 }
@@ -1618,7 +1618,7 @@ async function cadastrarSenha(){
       // Faz login automático após definir senha
       const login = await apiCall('POST', '/auth/login', { email: emailAtual, senha: nova });
       if(!login.ok){ setAl('criar','error', login.msg); }
-      else { sessao = login; abrirApp(); }
+      else { sessao = login; localStorage.setItem('concreserv_sessao', JSON.stringify(login)); abrirApp(); }
     }
   } catch(e){ setAl('criar','error','Erro de conexão.'); }
   btn.disabled = false; btn.textContent = 'Criar senha e entrar';
@@ -1646,6 +1646,29 @@ function abrirApp(){
   iniciarRealtime();
   iniciarGoogleMaps();
 }
+
+// ── Restaurar sessão ao recarregar a página ───────────────────
+(function restaurarSessao(){
+  try {
+    const salvo = localStorage.getItem('concreserv_sessao');
+    if(!salvo) return;
+    const dados = JSON.parse(salvo);
+    if(!dados?.token || !dados?.nome) return;
+
+    // Verifica se o token JWT ainda é válido (decodifica o payload)
+    const payload = JSON.parse(atob(dados.token.split('.')[1]));
+    if(payload.exp * 1000 < Date.now()){
+      localStorage.removeItem('concreserv_sessao');
+      return;
+    }
+
+    // Token válido — restaura sessão sem precisar logar novamente
+    sessao = dados;
+    abrirApp();
+  } catch(e){
+    localStorage.removeItem('concreserv_sessao');
+  }
+})();
 
 // ── Nav ───────────────────────────────────────────────────────
 function buildNav(){
@@ -2706,6 +2729,7 @@ async function fazerLogout(){
   sessao = null; emailAtual = '';
   ultimosProtos = new Set(); ultimosStatus = {};
   corridasAt = []; corridasUser = [];
+  localStorage.removeItem('concreserv_sessao');
   $('login-wrap').style.display = 'grid';
   $('app-wrap').style.display   = 'none';
   ['inp-email','inp-senha','inp-nova','inp-conf'].forEach(id => $(id).value = '');
