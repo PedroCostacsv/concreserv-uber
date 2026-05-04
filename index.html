@@ -1100,6 +1100,30 @@
   .df-range-sep{font-size:12px;color:var(--text3);}
   .df-range-btn{padding:6px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:600;cursor:pointer;border:none;background:var(--black);color:var(--white);font-family:inherit;transition:opacity .12s;}
   .df-range-btn:hover{opacity:.85;}
+
+  /* ── Google Places Autocomplete ── */
+  .pac-container{
+    border-radius:var(--radius-sm);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow-md);
+    font-family:'Inter',-apple-system,sans-serif;
+    font-size:13px;
+    margin-top:2px;
+    z-index:99999;
+  }
+  .pac-item{
+    padding:8px 12px;
+    cursor:pointer;
+    border-top:1px solid var(--border);
+    color:var(--text);
+    line-height:1.4;
+  }
+  .pac-item:first-child{border-top:none;}
+  .pac-item:hover,.pac-item-selected{background:var(--surface-2);}
+  .pac-item-query{font-weight:600;color:var(--text);}
+  .pac-matched{color:var(--brand);font-weight:700;}
+  .pac-icon{display:none;}
+  .hdpi .pac-icon{display:none;}
 </style>
 </head>
 <body>
@@ -1620,6 +1644,7 @@ function abrirApp(){
   buildNav();
   pedirNotif();
   iniciarRealtime();
+  iniciarGoogleMaps();
 }
 
 // ── Nav ───────────────────────────────────────────────────────
@@ -2629,6 +2654,72 @@ function urlBase64ToUint8Array(base64String) {
   for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
   return arr;
 }
+
+// ── Google Places Autocomplete ─────────────────────────────────
+let _mapsCarregado = false;
+let _autocompleteInstancias = [];
+
+// Chamada em abrirApp() — busca a chave e carrega o SDK
+async function iniciarGoogleMaps() {
+  if (_mapsCarregado) { ativarAutocomplete(); return; }
+  try {
+    const res = await apiCall('GET', '/config/maps-key');
+    if (!res.ok) { console.warn('[Maps] Chave não disponível.'); return; }
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${res.key}&libraries=places&language=pt-BR&region=BR&callback=_onMapsReady`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+  } catch(e) { console.warn('[Maps] Erro ao carregar Google Maps:', e.message); }
+}
+
+// Callback chamado pelo SDK quando estiver pronto
+window._onMapsReady = function() {
+  _mapsCarregado = true;
+  ativarAutocomplete();
+};
+
+// Ativa autocomplete nos campos de origem/destino visíveis
+function ativarAutocomplete() {
+  if (!window.google?.maps?.places) return;
+
+  // Destrói instâncias anteriores para evitar duplicatas
+  _autocompleteInstancias.forEach(ac => {
+    google.maps.event.clearInstanceListeners(ac);
+  });
+  _autocompleteInstancias = [];
+
+  const opcoes = {
+    componentRestrictions: { country: 'br' },
+    fields: ['formatted_address', 'geometry', 'name'],
+    types: ['geocode', 'establishment'],
+  };
+
+  // IDs dos campos que recebem autocomplete
+  const campos = ['f-orig', 'f-dest', 'ed-orig', 'ed-dest'];
+
+  campos.forEach(id => {
+    const input = document.getElementById(id);
+    if (!input) return;
+    const ac = new google.maps.places.Autocomplete(input, opcoes);
+    ac.addListener('place_changed', () => {
+      const place = ac.getPlace();
+      if (place.formatted_address) {
+        input.value = place.formatted_address;
+      }
+    });
+    _autocompleteInstancias.push(ac);
+  });
+}
+
+// Reativa autocomplete quando um modal de edição for aberto
+// (chamada automática sempre que ed-orig ou ed-dest aparecerem no DOM)
+const _observer = new MutationObserver(() => {
+  if (_mapsCarregado && (document.getElementById('ed-orig') || document.getElementById('ed-dest'))) {
+    ativarAutocomplete();
+  }
+});
+_observer.observe(document.body, { childList: true, subtree: true });
 </script>
 
 </body>
