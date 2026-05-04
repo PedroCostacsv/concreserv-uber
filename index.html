@@ -2006,6 +2006,9 @@ window.refreshCurrent    = function(){ if(currentPanel==="minhas") carregarUser(
 window.acao              = acao;
 window.acaoCorrida       = acaoCorrida;
 window.acaoConcluir      = acaoConcluir;
+window.abrirConclusao    = abrirConclusao;
+window.confirmarConclusao = confirmarConclusao;
+window.previewAnexo      = previewAnexo;
 window.abrirNegativa     = abrirNegativa;
 window.confirmarNegativa = confirmarNegativa;
 window.acaoCancelar      = acaoCancelar;
@@ -2279,7 +2282,10 @@ function kbCardAt(c){
   const revisaoClass = emRevisao ? ' revisao' : '';
   const dtConc       = c.dt_conclusao ? fmtDt(c.dt_conclusao) : '';
   const conclusaoInfo = dtConc
-    ? '<div style="font-size:11px;color:' + (foiNegado?'var(--st-red-tx)':'var(--st-green-tx)') + ';padding:4px 0 0">' + (foiNegado?'✕':'✓') + ' Encerrado em ' + dtConc + '</div>'
+    ? '<div style="font-size:11px;color:' + (foiNegado?'var(--st-red-tx)':'var(--st-green-tx)') + ';padding:4px 0 0;display:flex;align-items:center;gap:6px">'
+      + (foiNegado?'✕':'✓') + ' Encerrado em ' + dtConc
+      + (c.anexo_url ? ' <span style="font-size:10px;padding:1px 6px;border-radius:100px;background:var(--st-blue-bg);color:var(--st-blue-tx)">📎 Comprovante</span>' : '')
+      + '</div>'
     : '';
   const negativaBox = foiNegado
     ? '<div style="margin:6px 10px 4px;padding:8px 10px;background:var(--st-red-bg);border-radius:var(--radius-sm);border:1px solid #FCA5A5">'
@@ -2418,13 +2424,82 @@ async function acaoCorrida(id){
   } catch(e){ notif('info','Erro','Não foi possível atualizar.'); }
 }
 
-async function acaoConcluir(id){
+function abrirConclusao(id, proto){
+  fecharModal();
+  const modal = document.createElement('div');
+  modal.id = 'modal-usuario';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = '<div class="modal-box" style="max-width:420px">'
+    + '<div class="modal-header"><div class="modal-title">Concluir Corrida — ' + proto + '</div><button class="modal-close" onclick="fecharModal()">✕</button></div>'
+    + '<div class="modal-body">'
+    + '<p style="font-size:13px;color:var(--text2);margin-bottom:14px">Anexe uma print como comprovante (opcional).</p>'
+    + '<div class="modal-field">'
+    +   '<span class="modal-label">Comprovante (imagem)</span>'
+    +   '<input type="file" id="inp-anexo" accept="image/*" style="display:none" onchange="previewAnexo()">'
+    +   '<label for="inp-anexo" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:28px;border:2px dashed var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;color:var(--text2);background:var(--surface-2);border-radius:var(--radius-sm);transition:border-color .15s" id="anexo-label">'
+    +     '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>'
+    +     '<span id="anexo-txt">Clique para selecionar imagem</span>'
+    +   '</label>'
+    +   '<div id="anexo-preview" style="margin-top:10px;display:none"><img id="anexo-img" style="width:100%;border-radius:var(--radius-sm);border:1px solid var(--border);max-height:180px;object-fit:cover"></div>'
+    + '</div>'
+    + '</div>'
+    + '<div class="modal-footer">'
+    +   '<button class="kb-btn kb-btn-corrida" style="flex:1" id="btn-concluir" onclick="confirmarConclusao(\'' + id + '\')">✓ Concluir corrida</button>'
+    +   '<button class="kb-btn" style="flex:1;border:1px solid var(--border)" onclick="fecharModal()">Cancelar</button>'
+    + '</div>'
+    + '</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if(e.target === modal) fecharModal(); });
+}
+
+function previewAnexo(){
+  const file = $('inp-anexo')?.files[0];
+  if(!file) return;
+  $('anexo-txt').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    $('anexo-img').src = e.target.result;
+    $('anexo-preview').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function confirmarConclusao(id){
+  const btn = $('btn-concluir');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Concluindo...';
   try {
+    // 1. Conclui a corrida
     const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'concluido' });
-    if(!res.ok){ notif('info','Atenção', res.msg); return; }
+    if(!res.ok){ notif('info','Atenção', res.msg); btn.disabled = false; btn.textContent = '✓ Concluir corrida'; return; }
+
+    // 2. Se tiver anexo, faz upload
+    const file = $('inp-anexo')?.files[0];
+    if(file){
+      const formData = new FormData();
+      formData.append('anexo', file);
+      const token = sessao?.token || '';
+      await fetch(API_URL + '/corridas/' + id + '/anexo', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData,
+      });
+    }
+
     notif('status','✅ Corrida concluída!','A corrida foi finalizada com sucesso.');
+    fecharModal();
     await carregarAtendente(true);
-  } catch(e){ notif('info','Erro','Não foi possível concluir.'); }
+  } catch(e){
+    notif('info','Erro','Não foi possível concluir.');
+    btn.disabled = false;
+    btn.textContent = '✓ Concluir corrida';
+  }
+}
+
+async function acaoConcluir(id){
+  // Busca o protocolo para exibir no modal
+  const corrida = corridasAt.find(c => c.id === id);
+  abrirConclusao(id, corrida?.protocolo || '');
 }
 
 function abrirNegativa(id, proto){
@@ -2513,6 +2588,7 @@ function abrirModalDetalhes(c){
     + '<div class="modal-field"><span class="modal-label">Motivo</span><span class="modal-value">' + (motivo||'') + '</span></div>'
     + '<div class="modal-grid"><div class="modal-field"><span class="modal-label">Solicitante</span><span class="modal-value">' + (solicitanteNome||'') + '</span></div><div class="modal-field"><span class="modal-label">Unidade</span><span class="modal-value">' + (c.solicitante_unidade||'') + '</span></div></div>'
     + waBtnHtml
+    + (c.anexo_url ? '<div class="modal-field" style="margin-top:12px"><span class="modal-label">Comprovante</span><a href="' + c.anexo_url + '" target="_blank"><img src="' + c.anexo_url + '" style="width:100%;border-radius:var(--radius-sm);border:1px solid var(--border);max-height:200px;object-fit:cover;margin-top:6px;cursor:zoom-in"></a></div>' : '')
     + '</div>'
     + '<div class="modal-footer">'
     + '<button class="kb-btn kb-btn-corrida" style="flex:1" onclick="fecharModal();acaoCorrida(\'' + c.id + '\')">✓ Corrida Solicitada</button>'
@@ -2561,6 +2637,7 @@ function abrirModalDetalhesUser(id){
     + '<div class="modal-field"><span class="modal-label">Motivo da corrida</span><span class="modal-value">' + esc(c.motivo||'') + '</span></div>'
     + (dtConc ? '<div class="modal-field"><span class="modal-label">Encerrado em</span><span class="modal-value">' + dtConc + '</span></div>' : '')
     + (obsRev ? '<div style="margin-top:10px;padding:10px 12px;background:var(--st-amber-bg);border-radius:var(--radius-sm);border:1px solid #FCD34D"><div style="font-size:10px;font-weight:700;color:var(--st-amber-tx);text-transform:uppercase;margin-bottom:4px">⚠ Obs. do atendente</div><div style="font-size:13px;color:var(--st-amber-tx)">' + obsRev + '</div></div>' : '')
+    + (c.anexo_url ? '<div class="modal-field" style="margin-top:12px"><span class="modal-label">Comprovante</span><a href="' + c.anexo_url + '" target="_blank"><img src="' + c.anexo_url + '" style="width:100%;border-radius:var(--radius-sm);border:1px solid var(--border);max-height:200px;object-fit:cover;margin-top:6px;cursor:zoom-in"></a></div>' : '')
     + '</div>'
     + (c.status === 'Em revisão' ? '<div class="modal-footer"><button class="kb-btn kb-btn-assumir" style="flex:1" onclick="fecharModal();abrirEdicaoSolicitacao(\'' + c.id + '\')">✏ Editar e reenviar</button></div>' : '')
     + '</div>';
