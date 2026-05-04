@@ -1124,11 +1124,80 @@
   .cc-multi input[type=checkbox]{accent-color:var(--brand);width:14px;height:14px;flex-shrink:0;}
   .cc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;min-height:20px;}
   .cc-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:100px;background:var(--st-blue-bg);color:var(--st-blue-tx);border:0.5px solid var(--st-blue-bg);}
+  /* ── Banner de instalação PWA ── */
+  #pwa-install-banner{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    background:#fff;
+    border-top:1px solid var(--border);
+    box-shadow:0 -4px 24px rgba(0,0,0,.10);
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    z-index:99999;
+    transform:translateY(100%);
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
+  }
+  #pwa-install-banner.show{ transform:translateY(0); }
+  .pwa-banner-icon{
+    width:48px; height:48px;
+    background:var(--brand);
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+    color:#fff;
+    font-weight:800;
+    font-size:22px;
+  }
+  .pwa-banner-text{ flex:1; min-width:0; }
+  .pwa-banner-title{ font-size:14px; font-weight:600; color:var(--text); }
+  .pwa-banner-sub{ font-size:12px; color:var(--text2); margin-top:2px; }
+  .pwa-banner-actions{ display:flex; gap:8px; flex-shrink:0; }
+  .pwa-btn-install{
+    background:var(--brand);
+    color:#fff;
+    border:none;
+    border-radius:var(--radius-sm);
+    padding:8px 16px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:inherit;
+    white-space:nowrap;
+  }
+  .pwa-btn-dismiss{
+    background:var(--surface-2);
+    color:var(--text2);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:8px 12px;
+    font-size:13px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  @media(max-width:480px){
+    #pwa-install-banner{ flex-wrap:wrap; }
+    .pwa-banner-actions{ width:100%; }
+    .pwa-btn-install{ flex:1; }
+    .pwa-btn-dismiss{ flex:1; }
+  }
 </style>
 </head>
 <body>
 
 <div class="notif-wrap" id="notif-wrap"></div>
+<div id="pwa-install-banner" role="dialog" aria-label="Instalar aplicativo">
+  <div class="pwa-banner-icon">C</div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Instalar Central Concreserv</div>
+    <div class="pwa-banner-sub">Adicione à tela inicial para acesso rápido</div>
+  </div>
+  <div class="pwa-banner-actions">
+    <button class="pwa-btn-dismiss" onclick="dispensarBannerPWA()">Agora não</button>
+    <button class="pwa-btn-install" onclick="instalarPWA()">⬇ Instalar</button>
+  </div>
+</div>
 <div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
 
 <!-- ====== LOGIN ====== -->
@@ -2881,7 +2950,66 @@ async function fazerLogout(){
   PWA — Service Worker + Notificações Push
   ============================================================ -->
 <script>
-// ── Registro do Service Worker ─────────────────────────────────
+// ── Banner de instalação PWA ───────────────────────────────────
+let _deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+
+  // Só mostra o banner se o usuário não tiver dispensado antes
+  const dispensado = localStorage.getItem('pwa_banner_dispensado');
+  if(dispensado) return;
+
+  // Aguarda 3s antes de mostrar para não ser intrusivo
+  setTimeout(() => {
+    const banner = document.getElementById('pwa-install-banner');
+    if(banner) banner.classList.add('show');
+  }, 3000);
+});
+
+// Detecta quando o app foi instalado e esconde o banner
+window.addEventListener('appinstalled', () => {
+  const banner = document.getElementById('pwa-install-banner');
+  if(banner) banner.classList.remove('show');
+  _deferredInstallPrompt = null;
+  localStorage.setItem('pwa_banner_dispensado', '1');
+  notif('status', '✅ App instalado!', 'Central Concreserv adicionada à tela inicial.');
+});
+
+function instalarPWA(){
+  if(!_deferredInstallPrompt) return;
+  _deferredInstallPrompt.prompt();
+  _deferredInstallPrompt.userChoice.then(choice => {
+    if(choice.outcome === 'accepted'){
+      console.log('[PWA] Usuário aceitou instalar');
+    } else {
+      // Dispensado na escolha nativa — esconde por 7 dias
+      const expiry = Date.now() + 7 * 24 * 60 * 60 * 1000;
+      localStorage.setItem('pwa_banner_dispensado', expiry.toString());
+    }
+    const banner = document.getElementById('pwa-install-banner');
+    if(banner) banner.classList.remove('show');
+    _deferredInstallPrompt = null;
+  });
+}
+
+function dispensarBannerPWA(){
+  const banner = document.getElementById('pwa-install-banner');
+  if(banner) banner.classList.remove('show');
+  // Esconde por 7 dias
+  const expiry = Date.now() + 7 * 24 * 60 * 60 * 1000;
+  localStorage.setItem('pwa_banner_dispensado', expiry.toString());
+}
+
+// Verifica se o período de dispensa expirou
+(function verificarDispensa(){
+  const val = localStorage.getItem('pwa_banner_dispensado');
+  if(val && val !== '1'){
+    const expiry = parseInt(val, 10);
+    if(Date.now() > expiry) localStorage.removeItem('pwa_banner_dispensado');
+  }
+})();
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/concreserv-uber/service-worker.js')
@@ -2941,7 +3069,8 @@ function urlBase64ToUint8Array(base64String) {
   return arr;
 }
 
-// ── Google Places Autocomplete ─────────────────────────────────
+window.instalarPWA        = instalarPWA;
+window.dispensarBannerPWA = dispensarBannerPWA;
 let _mapsCarregado = false;
 let _autocompleteInstancias = [];
 
