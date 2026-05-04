@@ -979,10 +979,10 @@
   .divider{height:1px;background:var(--border);margin:4px 0;}
 
   /* ====== KANBAN CRM ====== */
-  .kanban-wrap{display:flex;gap:14px;overflow-x:auto;padding-bottom:12px;flex:1;align-items:flex-start;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+  .kanban-wrap{display:flex;gap:20px;overflow-x:auto;padding-bottom:12px;flex:1;align-items:flex-start;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
   .kanban-wrap::-webkit-scrollbar{height:6px;}
   .kanban-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-  .kb-col{flex:0 0 320px;min-width:320px;display:flex;flex-direction:column;background:var(--surface-2);border-radius:var(--radius-lg);border:1px solid var(--border);max-height:calc(100vh - 240px);overflow:hidden;}
+  .kb-col{flex:0 0 360px;min-width:360px;display:flex;flex-direction:column;background:var(--surface-2);border-radius:var(--radius-lg);border:1px solid var(--border);max-height:calc(100vh - 240px);overflow:hidden;}
   @media(max-width:700px){
     .kanban-wrap{flex-direction:column;overflow-x:unset;gap:10px;}
     .kb-col{flex:none;min-width:unset;width:100%;max-height:none;}
@@ -1005,7 +1005,7 @@
   .kb-col-bar.atendimento{background:var(--st-blue);}
   .kb-col-bar.concluido{background:var(--st-green);}
   .kb-col-bar.cancelado{background:var(--st-red);}
-  .kb-col-body{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+  .kb-col-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
   .kb-col-body::-webkit-scrollbar{width:4px;}
   .kb-col-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
   .kb-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:12px 13px;transition:border-color .15s,box-shadow .15s,transform .12s;cursor:default;position:relative;}
@@ -1963,6 +1963,9 @@ window.novaSolic         = novaSolic;
 window.refreshCurrent    = function(){ if(currentPanel==="minhas") carregarUser(); if(currentPanel==="atendente") carregarAtendente(); };
 window.acao              = acao;
 window.acaoCorrida       = acaoCorrida;
+window.acaoConcluir      = acaoConcluir;
+window.abrirNegativa     = abrirNegativa;
+window.confirmarNegativa = confirmarNegativa;
 window.acaoCancelar      = acaoCancelar;
 window.assumirEAbrirModal = assumirEAbrirModal;
 window.abrirModalDetalhes = abrirModalDetalhes;
@@ -2028,14 +2031,14 @@ function kbColSkeleton(tipo, nome){
 function mostrarSkeletonUser(){
   const el = $('df-user'); if(el) el.innerHTML = '';
   $('kanban-user').innerHTML =
-    kbColSkeleton('pendente','Pendente') + kbColSkeleton('atendimento','Em Atendimento') +
-    kbColSkeleton('concluido','Concluídas') + kbColSkeleton('cancelado','Canceladas');
+    kbColSkeleton('pendente','Aguardando') + kbColSkeleton('atendimento','Em Atendimento') +
+    kbColSkeleton('concluido','Concluídas');
 }
 function mostrarSkeletonAt(){
   const el = $('df-at'); if(el) el.innerHTML = '';
   $('kanban-at').innerHTML =
     kbColSkeleton('pendente','Aguardando') + kbColSkeleton('atendimento','Em Atendimento') +
-    kbColSkeleton('concluido','Concluídas') + kbColSkeleton('cancelado','Canceladas');
+    kbColSkeleton('concluido','Concluídas');
 }
 
 // ── Render User ───────────────────────────────────────────────
@@ -2043,14 +2046,12 @@ function renderUser(){
   buildDateFilter('df-user', filtroDataUser, 'setFiltroUser');
   const filtered   = corridasUser.filter(c => passaFiltroData(c, filtroDataUser, rangeDeUser, rangeAteUser));
   const pendente   = filtered.filter(c => c.status === 'Recebido' || c.status === 'Em revisão');
-  const atend      = filtered.filter(c => c.status === 'Em atendimento');
+  const atend      = filtered.filter(c => c.status === 'Em Andamento' || c.status === 'Em atendimento' || c.status === 'Corrida solicitada');
   const concluido  = filtered.filter(c => c.status === 'Concluído');
-  const cancelado  = filtered.filter(c => c.status === 'Cancelado');
   $('kanban-user').innerHTML =
-    kbCol('pendente',   'Pendente',       pendente,  pendente.map(c  => kbCard(c, false)).join('')) +
+    kbCol('pendente',   'Aguardando',     pendente,  pendente.map(c  => kbCard(c, false)).join('')) +
     kbCol('atendimento','Em Atendimento', atend,     atend.map(c     => kbCard(c, false)).join('')) +
-    kbCol('concluido',  'Concluídas',     concluido, concluido.map(c  => kbCard(c, false)).join('')) +
-    kbCol('cancelado',  'Canceladas',     cancelado, cancelado.map(c  => kbCard(c, false)).join(''));
+    kbCol('concluido',  'Concluídas',     concluido, concluido.map(c  => kbCard(c, false)).join(''));
 }
 
 // ── Render Atendente ──────────────────────────────────────────
@@ -2072,15 +2073,13 @@ function renderAt(){
   });
 
   const pendente  = filtered.filter(c => c.status === 'Recebido' || c.status === 'Em revisão');
-  const atend     = filtered.filter(c => c.status === 'Em atendimento');
+  const atend     = filtered.filter(c => c.status === 'Em Andamento' || c.status === 'Em atendimento' || c.status === 'Corrida solicitada');
   const concluido = filtered.filter(c => c.status === 'Concluído');
-  const cancelado = filtered.filter(c => c.status === 'Cancelado');
 
   $('kanban-at').innerHTML =
     kbCol('pendente',   'Aguardando',     pendente,  pendente.map(c  => kbCardAt(c)).join('')) +
     kbCol('atendimento','Em Atendimento', atend,     atend.map(c     => kbCardAt(c)).join('')) +
-    kbCol('concluido',  'Concluídas',     concluido, concluido.map(c  => kbCardAt(c)).join('')) +
-    kbCol('cancelado',  'Canceladas',     cancelado, cancelado.map(c  => kbCardAt(c)).join(''));
+    kbCol('concluido',  'Concluídas',     concluido, concluido.map(c  => kbCardAt(c)).join(''));
 }
 
 // ── Componentes Kanban ────────────────────────────────────────
@@ -2100,9 +2099,9 @@ function kbCol(tipo, nome, items, cardsHtml){
 }
 
 function kbStatusChip(s){
-  const cls = {'Recebido':'recebido','Em atendimento':'atendimento',
+  const cls = {'Recebido':'recebido','Em Andamento':'atendimento','Em atendimento':'atendimento',
                'Corrida solicitada':'solicitada','Concluído':'concluido','Cancelado':'cancelado','Em revisão':'recebido'};
-  const lbl = {'Recebido':'Recebido','Em atendimento':'Em Atendimento',
+  const lbl = {'Recebido':'Recebido','Em Andamento':'Em Andamento','Em atendimento':'Em Andamento',
                'Corrida solicitada':'Corrida Solicitada','Concluído':'Concluído','Cancelado':'Cancelado','Em revisão':'Em Revisão'};
   return `<span class="kb-status-chip ${cls[s]||'recebido'}">${lbl[s]||s}</span>`;
 }
@@ -2197,7 +2196,8 @@ function kbCardAt(c){
   const dtSolicitada = esc(c.dt_solicitada || '');
   const observacaoRevisao = esc(c.observacao_revisao || '');
   const atendenteNome = esc(c.atendente_nome || '');
-  const done         = c.status === 'Concluído' || c.status === 'Cancelado';
+  const done         = c.status === 'Concluído';
+  const emAndamento  = c.status === 'Em Andamento' || c.status === 'Em atendimento';
   const emRevisao    = c.status === 'Em revisão';
   const atNome       = c.atendente_nome || '';
   const urgClass     = c.urgencia === 'urgente' ? ' urgente' : '';
@@ -2263,17 +2263,21 @@ function kbCardAt(c){
     actions = '<div class="kb-actions">'
       + '<button class="kb-btn kb-btn-assumir" style="flex:1" onclick="assumirEAbrirModal(\'' + c.id + '\')">Assumir atendimento</button>'
       + '</div>';
-  } else if(c.status === 'Em atendimento' && atNome){
+  } else if(emAndamento && atNome){
     actions = '<div class="kb-actions">'
       + '<button class="kb-blocked">🔒 ' + atNome + '</button>'
       + '<button class="kb-btn kb-btn-corrida" onclick="acaoCorrida(\'' + c.id + '\')">✓ Corrida Solicitada</button>'
       + '<button class="kb-btn" style="background:var(--st-amber-bg);color:var(--st-amber-tx);border:1px solid #FCD34D" onclick="abrirRevisao(\'' + c.id + '\',\'' + c.protocolo + '\')">↩ Solicitar Revisão</button>'
-      + '<button class="kb-btn kb-btn-cancelar" onclick="acaoCancelar(\'' + c.id + '\')">Cancelar</button>'
+      + '<button class="kb-btn" style="background:var(--st-red-bg);color:var(--st-red-tx);border:1px solid #FCA5A5" onclick="abrirNegativa(\'' + c.id + '\',\'' + c.protocolo + '\')">✕ Corrida Negada</button>'
+      + '</div>';
+  } else if(c.status === 'Corrida solicitada'){
+    actions = '<div class="kb-actions">'
+      + '<button class="kb-blocked">🔒 ' + atNome + '</button>'
+      + '<button class="kb-btn kb-btn-corrida" onclick="acaoConcluir(\'' + c.id + '\')">✓ Concluir</button>'
       + '</div>';
   } else if(done){
     actions = '<div class="kb-actions">'
       + '<div style="text-align:center;font-size:11px;font-weight:600;padding:6px;color:var(--st-green-tx);background:var(--st-green-bg);border-radius:var(--radius-sm)">✓ ' + c.status + '</div>'
-      + '<button class="kb-btn kb-btn-reabrir" onclick="acao(\'' + c.id + '\',\'reabrir\')">↩ Reabrir</button>'
       + '</div>';
   }
 
@@ -2323,11 +2327,48 @@ async function acao(id, subacao){
 
 async function acaoCorrida(id){
   try {
+    const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'corrida' });
+    if(!res.ok){ notif('info','Atenção', res.msg); return; }
+    notif('status','✅ Corrida solicitada!','O táxi foi solicitado.');
+    await carregarAtendente(true);
+  } catch(e){ notif('info','Erro','Não foi possível atualizar.'); }
+}
+
+async function acaoConcluir(id){
+  try {
     const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'concluido' });
     if(!res.ok){ notif('info','Atenção', res.msg); return; }
     notif('status','✅ Corrida concluída!','A corrida foi finalizada com sucesso.');
     await carregarAtendente(true);
   } catch(e){ notif('info','Erro','Não foi possível concluir.'); }
+}
+
+function abrirNegativa(id, proto){
+  fecharModal();
+  const modal = document.createElement('div');
+  modal.id = 'modal-usuario';
+  modal.className = 'modal-overlay';
+  modal.innerHTML = '<div class="modal-box" style="max-width:420px">'
+    + '<div class="modal-header"><div class="modal-title">Corrida Negada — ' + proto + '</div><button class="modal-close" onclick="fecharModal()">✕</button></div>'
+    + '<div class="modal-body"><p style="font-size:13px;color:var(--text2);margin-bottom:14px">Informe o motivo da negativa. O solicitante será notificado.</p>'
+    + '<div class="modal-field"><span class="modal-label">Justificativa <span style="color:var(--brand)">*</span></span><textarea class="ft" id="obs-negativa" placeholder="Ex: Corrida fora da política de uso..." style="min-height:100px"></textarea></div></div>'
+    + '<div class="modal-footer"><button class="kb-btn" style="flex:1;background:var(--st-red-bg);color:var(--st-red-tx);border:1px solid #FCA5A5" onclick="confirmarNegativa(\'' + id + '\')">✕ Confirmar negativa</button><button class="kb-btn" style="flex:1;border:1px solid var(--border)" onclick="fecharModal()">Cancelar</button></div>'
+    + '</div>';
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if(e.target === modal) fecharModal(); });
+  setTimeout(() => $('obs-negativa')?.focus(), 100);
+}
+
+async function confirmarNegativa(id){
+  const motivo_negativa = $('obs-negativa')?.value.trim();
+  if(!motivo_negativa){ notif('info','Atenção','Informe o motivo da negativa.'); return; }
+  try {
+    const res = await apiCall('PATCH', '/corridas/' + id + '/status', { acao: 'negar', motivo_negativa });
+    if(!res.ok){ notif('info','Atenção', res.msg); return; }
+    notif('status','✕ Corrida negada','O solicitante foi notificado.');
+    fecharModal();
+    await carregarAtendente(true);
+  } catch(e){ notif('info','Erro','Não foi possível registrar a negativa.'); }
 }
 
 async function acaoCancelar(id){
@@ -2392,7 +2433,7 @@ function abrirModalDetalhes(c){
     + '<div class="modal-footer">'
     + '<button class="kb-btn kb-btn-corrida" style="flex:1" onclick="fecharModal();acaoCorrida(\'' + c.id + '\')">✓ Corrida Solicitada</button>'
     + '<button class="kb-btn" style="flex:1;background:var(--st-amber-bg);color:var(--st-amber-tx);border:1px solid #FCD34D" onclick="fecharModal();abrirRevisao(\'' + c.id + '\',\'' + c.protocolo + '\')">↩ Solicitar Revisão</button>'
-    + '<button class="kb-btn kb-btn-cancelar" style="flex:1" onclick="fecharModal();acaoCancelar(\'' + c.id + '\')">Cancelar</button>'
+    + '<button class="kb-btn" style="flex:1;background:var(--st-red-bg);color:var(--st-red-tx);border:1px solid #FCA5A5" onclick="fecharModal();abrirNegativa(\'' + c.id + '\',\'' + c.protocolo + '\')">✕ Corrida Negada</button>'
     + '</div></div>';
   document.body.appendChild(modal);
   modal.addEventListener('click', e => { if(e.target === modal) fecharModal(); });
